@@ -23,6 +23,16 @@ Please, fill the following sections about your project.
 >
 > Hint: some good pointers for finding quality publicly available datasets ([Google dataset search](https://datasetsearch.research.google.com/), [Kaggle](https://www.kaggle.com/datasets), [OpenSwissData](https://opendata.swiss/en/), [SNAP](https://snap.stanford.edu/data/) and [FiveThirtyEight](https://data.fivethirtyeight.com/)), you could use also the DataSets proposed by the ENAC (see the Announcements section on Zulip).
 
+The dataset we chose is about the world of formula 1. It contains many informations on the circuits, constructors, drivers, races, etc between the years 1950-2023.
+> https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020
+
+Separated into many csv files, the informations can be regrouped by ID (race id, driver id, etc). Overall, the data is very complete and many visualization can be mande from them.
+In addition, we will use a repository containing SVG files for the Formula 1 tracks.
+> https://github.com/f1laps/f1-track-vectors
+
+ Before tackling visualization, we will have to regroup the information of interest into different tables. 
+
+
 ### Problematic
 
 > Frame the general topic of your visualization and the main axis that you want to develop.
