@@ -10,7 +10,7 @@
 
 ## Milestone 1 (7th April, 5pm)
 
-See [milestone1.md](milestones\milestone1.md)
+See [milestone1.md](milestones/milestone1.md)
 
 ## Milestone 2 (7th May, 5pm)
 
