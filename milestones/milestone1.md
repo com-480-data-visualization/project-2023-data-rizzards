@@ -2,15 +2,12 @@
 
 ### Dataset
 
-The dataset we chose is about the world of Formula-1. It contains a lot of information on the circuits, constructors, drivers, races, etc. between the years 1950-2023.
-
-> https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020
-
+The [dataset](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020) we chose is about the world of Formula-1. It contains a lot of information on the circuits, constructors, drivers, races, etc. between the years 1950-2023.
 It is separated into many `csv` files, and the information can be selected by ID (race_id, driver_id, etc.).
 Overall, the data is very complete and has the potential for many visualizations.
-In addition, we will use a repository containing SVG files for the Formula 1 tracks.
 
-> https://github.com/f1laps/f1-track-vectors
+In addition, we will use a [repository](https://github.com/f1laps/f1-track-vectors) containing SVG files for the Formula 1 tracks.
+
 
 Before tackling visualization, we will have to regroup the information of interest into different tables.
 
