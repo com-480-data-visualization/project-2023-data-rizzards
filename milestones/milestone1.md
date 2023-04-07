@@ -8,7 +8,6 @@ Overall, the data is very complete and has the potential for many visualizations
 
 In addition, we will use a [repository](https://github.com/f1laps/f1-track-vectors) containing SVG files for the Formula 1 tracks.
 
-
 Before tackling visualization, we will have to regroup the information of interest into different tables.
 
 ### Problematic
@@ -31,6 +30,8 @@ With these visualizations we want to target two demographies:
 > Pre-processing of the data set you chose
 >
 > - Show some basic statistics and get insights about the data
+
+See [data_analysis.ipynb](/data_analysis.ipynb)
 
 ### Related work
 
