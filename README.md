@@ -14,7 +14,7 @@ See [milestone1.md](milestones/milestone1.md)
 
 ## Milestone 2 (7th May, 5pm)
 
-**10% of the final grade**
+See [milestone2.md](milestones/milestone2.md)
 
 ## Milestone 3 (4th June, 5pm)
 
