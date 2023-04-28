@@ -1,37 +1,37 @@
 ## Milestone 2
 
-Two A4 pages describing the project goal.
-### Project visualization
-For our project, we want to visualize detailed information about F1 drivers and races. More precisely, we plan to present three different ideas.
+### Link to the [project](https://com-480-data-visualization.github.io/project-2023-data-rizzards).
 
-#### Race
-For a given race, how the race unfolded (positions of the drivers, pit stops, etc.)
-To vizualise it, we use svgs for some of the circuits, from [repository](https://github.com/f1laps/f1-track-vectors).
-For a chosen year, for a chosen location (must be able to chose one or the other first and the selection change depending what is available) -> output a track with list of drivers (that you can select or not, with a button to automatically select top 5 of the race) and a button start race options:
-add pit stops (driver stops for the pit stop duration)
-add a plot which show more clearly the current position
 
-#### Driver
-For a given driver, how the driver's performance evolved over time, which teams they raced for, how many races did they win, compare them to other drivers, etc.
+Our website is composed of 4 sections; one being the home and welcoming page and the three others will introduce nice visualizations.
 
-By selecting a driver -> output:
-- plot for wins in time (+total)
-- plot for points in time
-- constructor they raced for in time
-Options:
-- possibility to select up to x drivers to compare them
-- short description of each driver ?
+### Race
+This section will show, for a given race, how it unfolded (positions of the drivers in time).
+To vizualise it, we use svgs for the circuits, from [repository](https://github.com/f1laps/f1-track-vectors).
+For a chosen year, for a chosen location/track, we will be able to vizualise the track, as well as the list of drivers and a button start. 
 
-#### Season
-For each year, the schedule of the races, their locations on the world map, which teams participated, etc.
+Additional features:
+- add a way to select a driver and a track and show how he raced for various years
+- add a plot which show more clearly the current position
 
-To determine.
-An idea: By selecting a year -> output:
-- list of races
-- world map with locations
-- list of constructors
-Options:
-- show the movement
+### Driver
+This section will show, for a given driver or a few selected ones, how the drivers' performance evolved over time.
+
+TODO: Include sketch and details.
+
+Additional features:
+- using colors, show which teams they raced for
+
+To help with visualization, the library [nivo](https://nivo.rocks/about/), and more specifically the tool [AreaBump](https://nivo.rocks/area-bump/).
+Furthermore, the lecture 5 on interactions will be helpful to get more insight on using the mouse to select from multiple choices and layering. The lecture 6 on perception colors and marks will be helpful to show informations using width, colors, and much more.
+
+
+### Season
+This section will show, for each year, a list of teams that participated, the schedule of the races and a flow map showing the movement of the teams during the year.
+Furthermore, we add a count of total kilometers traveled as well as an approximation of CO2 emission.
+-> lecture 8 is about maps
+
+
 
 • Include sketches of the vizualiation you want to make in your final product.
 • List the tools that you will use for each visualization and which (past or future) lectures you will need.
@@ -39,4 +39,3 @@ Options:
 Then list extra ideas (more creative or challenging) that will enhance the visualization but could be dropped without endangering the meaning of the
 project.
 
-### Link to the [project](https://com-480-data-visualization.github.io/project-2023-data-rizzards).
