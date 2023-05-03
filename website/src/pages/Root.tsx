@@ -7,6 +7,7 @@ import { TabPanel } from "@mui/joy";
 import Season from "./season";
 import Driver from "./driver";
 import Race from "./race";
+import logo from "../assets/logo512.png";
 
 const Root: React.FC = () => {
   return (
@@ -34,7 +35,7 @@ const Root: React.FC = () => {
         }}
       >
         <Tab value={"home"}>
-          <img src={"/logo512.png"} alt="logo" height="48px" />
+          <img src={logo} alt="logo" height="48px" />
         </Tab>
         <Tab value={"season"}>Season</Tab>
         <Tab value={"driver"}>Driver</Tab>
