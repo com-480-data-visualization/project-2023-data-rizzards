@@ -10,6 +10,7 @@ const Home: React.FC = () => {
         flexDirection: "column",
         alignItems: "center",
         gap: 2,
+        padding: "4em",
       }}
     >
       <Typography level="display2">

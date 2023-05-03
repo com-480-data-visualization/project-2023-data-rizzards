@@ -34,7 +34,7 @@ const Root: React.FC = () => {
         }}
       >
         <Tab value={"home"}>
-          <img src="logo512.png" alt="logo" height="48px" />
+          <img src={"/logo512.png"} alt="logo" height="48px" />
         </Tab>
         <Tab value={"season"}>Season</Tab>
         <Tab value={"driver"}>Driver</Tab>
