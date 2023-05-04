@@ -37,9 +37,10 @@ const Root: React.FC = () => {
         <Tab value={"home"}>
           <img src={logo} alt="logo" height="48px" />
         </Tab>
-        <Tab value={"season"}>Season</Tab>
         <Tab value={"driver"}>Driver</Tab>
         <Tab value={"race"}>Race</Tab>
+        <Tab value={"season"}>Transport</Tab>
+
       </TabList>
 
       <TabPanel value="home">

@@ -15,8 +15,7 @@ const Driver: React.FC = () => {
     const [selectedDriver, setSelectedDriver] = useState("");
 
 
-    const drivers = ["Alonso", "Hamiltons"]
-    const d = {
+    const drivers = {
         id: "Drivers",
         data: [
             {
@@ -27,7 +26,7 @@ const Driver: React.FC = () => {
             },
         ],
     };
-    const driverOptions = drivers
+    const driverOptions = drivers.data
 
     const handleDriverSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const driver = e.target.value;
@@ -76,14 +75,132 @@ const Driver: React.FC = () => {
         },
     ];
 
+    const years = [
+        {
+            id: "Alonso",
+            data: [
+                {
+                    x: 0,
+                    y: 0,
+                },
+                {
+                    x: 1,
+                    y: 3,
+                },
+                {
+                    x: 2,
+                    y: 3,
+                },
+                {
+                    x: 3,
+                    y: 5,
+                },
+                {
+                    x: 4,
+                    y: 15,
+                },
+                {
+                    x: 5,
+                    y: 20,
+                },
+                {
+                    x: 6,
+                    y: 25,
+                },
+                {
+                    x: 7,
+                    y: 30,
+                },
+                {
+                    x: 8,
+                    y: 31,
+                },
+                {
+                    x: 9,
+                    y: 35,
+                },
+                {
+                    x: 10,
+                    y: 40,
+                },
+                {
+                    x: 11,
+                    y: 45,
+                },
+                {
+                    x: 12,
+                    y: 50,
+                },
+            ],
+        },
+        {
+            id: "Hamilton",
+            data: [
+                {
+                    x: 0,
+                    y: 0,
+                },
+                {
+                    x: 1,
+                    y: 6,
+                },
+                {
+                    x: 2,
+                    y: 7,
+                },
+                {
+                    x: 3,
+                    y: 10,
+                },
+                {
+                    x: 4,
+                    y: 15,
+                },
+                {
+                    x: 5,
+                    y: 20,
+                },
+                {
+                    x: 6,
+                    y: 21,
+                },
+                {
+                    x: 7,
+                    y: 25,
+                },
+                {
+                    x: 8,
+                    y: 28,
+                },
+                {
+                    x: 9,
+                    y: 30,
+                },
+                {
+                    x: 10,
+                    y: 40,
+                },
+                {
+                    x: 11,
+                    y: 41,
+                },
+                {
+                    x: 12,
+                    y: 42,
+                },
+            ],
+        },
+    ];
+
     return (
         <Box
             display="grid"
             gridTemplateColumns="1fr 4fr"
-            gridTemplateRows="2fr 1fr 4sfr"
+            gridTemplateRows="2fr 1fr 4sfr 4sfr"
             gridTemplateAreas={`"para para" 
               "inputs inputs"
-              "list plot"`}
+              "list plot"
+              "plot2 plot2"`}
             gap={4}
         >
             <Box gridArea="para" padding="2em">
@@ -98,10 +215,10 @@ const Driver: React.FC = () => {
             >
                 <Box>
                     <label>
-                        <FormLabel>Choose your driver:</FormLabel>
+                        <FormLabel>Select a driver:</FormLabel>
                         <Autocomplete
                             placeholder="Driver"
-                            options={driverOptions}
+                            options={["Alonso", "Hamilton"]}
                         />
                     </label>
                 </Box>
@@ -128,7 +245,7 @@ const Driver: React.FC = () => {
                         List of selected drivers
                     </Typography>
                     <List sx={{padding: "5%"}}>
-                        {d.data.map(({name}) => (
+                        {drivers.data.map(({name}) => (
                             <Box>
                                 <ListItem>
                                     <ListItemContent>
@@ -153,12 +270,22 @@ const Driver: React.FC = () => {
             <Box
                 gridArea="plot"
                 display="flex"
-                justifyContent="center"
-                alignItems="center"
                 padding="3em"
                 height="360px"
             >
                 {MyResponsiveBump(data)}
+            </Box>
+            <Box
+                gridArea="plot2"
+                display="flex"
+                flexDirection="column"
+                padding="3em"
+                height="360px"
+            >
+                <Typography level="body1" textTransform="uppercase" fontWeight="lg">
+                    Year: 2019
+                </Typography>
+                {MyResponsiveAreaBump(years)}
             </Box>
         </Box>
     )
@@ -169,11 +296,10 @@ const Driver: React.FC = () => {
 //{MyResponsiveAreaBump(data)}
 export default Driver;
 
-
 const PageExplanation = (
     <>
         <Typography level="h2" sx={{textAlign: "center"}}>
-            Overview of drivers' seasons
+            Overview of the drivers' seasons
         </Typography>
         <br/>
         <Typography level="body1"> Explain how to use this page </Typography>
@@ -197,19 +323,12 @@ const MyResponsiveBump = (data: { id: string; data: { x: number | string; y: num
         pointBorderWidth={3}
         activePointBorderWidth={3}
         pointBorderColor={{from: 'serie.color'}}
-        axisTop={{
-            tickSize: 5,
-            tickPadding: 5,
-            tickRotation: 0,
-            legend: '',
-            legendPosition: 'middle',
-            legendOffset: -36
-        }}
+        axisTop={null}
         axisBottom={{
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: '',
+            legend: 'year',
             legendPosition: 'middle',
             legendOffset: 32
         }}
@@ -235,21 +354,12 @@ const MyResponsiveAreaBump = (data: { id: string; data: { x: number | string; y:
 
         blendMode="multiply"
 
-        //startLabel= id
-        //endLabel= "id"
-        axisTop={{
-            tickSize: 5,
-            tickPadding: 5,
-            tickRotation: 0,
-            legend: '',
-            legendPosition: 'middle',
-            legendOffset: -36
-        }}
+        axisTop={null}
         axisBottom={{
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: '',
+            legend: 'month',
             legendPosition: 'middle',
             legendOffset: 32
         }}
