@@ -1,11 +1,14 @@
 import React from "react";
-import {ResponsiveBump} from "@nivo/bump";
+import {ResponsiveAreaBump, ResponsiveBump} from "@nivo/bump";
 import {useState} from "react";
 import Box from "@mui/joy/Box";
 import Button from '@mui/joy/Button';
-import {FormLabel} from "@mui/joy";
+import {Checkbox, FormLabel, ListItemContent, ListItemDecorator} from "@mui/joy";
 import Autocomplete from "@mui/joy/Autocomplete";
 import {Typography} from "@mui/joy";
+import List from "@mui/joy/List";
+import ListItem from "@mui/joy/ListItem";
+import Sheet from "@mui/joy/Sheet";
 
 const Driver: React.FC = () => {
 
@@ -13,6 +16,17 @@ const Driver: React.FC = () => {
 
 
     const drivers = ["Alonso", "Hamiltons"]
+    const d = {
+        id: "Drivers",
+        data: [
+            {
+                name: "Alonso",
+            },
+            {
+                name: "Hamiltons",
+            },
+        ],
+    };
     const driverOptions = drivers
 
     const handleDriverSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -27,7 +41,7 @@ const Driver: React.FC = () => {
 
     const data = [
         {
-            id: "Serie 1",
+            id: "Alonso",
             data: [
                 {
                     x: 2000,
@@ -39,7 +53,24 @@ const Driver: React.FC = () => {
                 },
                 {
                     x: 2002,
-                    y: 4,
+                    y: 3,
+                },
+            ],
+        },
+        {
+            id: "Hamilton",
+            data: [
+                {
+                    x: 2000,
+                    y: 1,
+                },
+                {
+                    x: 2001,
+                    y: 2,
+                },
+                {
+                    x: 2002,
+                    y: 1,
                 },
             ],
         },
@@ -64,7 +95,6 @@ const Driver: React.FC = () => {
                 display="flex"
                 justifyContent="space-evenly"
                 alignItems="end"
-                id='output'
             >
                 <Box>
                     <label>
@@ -91,9 +121,34 @@ const Driver: React.FC = () => {
                 display="flex"
                 justifyContent="column"
                 textAlign="center"
-                sx={{ padding: "5%" }}
+                sx={{padding: "5%"}}
             >
-                list of selected drivers
+                <Sheet variant="soft" sx={{padding: "1em"}}>
+                    <Typography level="body1" textTransform="uppercase" fontWeight="lg">
+                        List of selected drivers
+                    </Typography>
+                    <List sx={{padding: "5%"}}>
+                        {d.data.map(({name}) => (
+                            <Box>
+                                <ListItem>
+                                    <ListItemContent>
+                                        <Typography level="body1">{name}</Typography>
+                                    </ListItemContent>
+                                    <Checkbox color='danger' defaultChecked/>
+                                </ListItem>
+                                <Button
+                                    variant="outlined"
+                                    size='sm'
+                                    color='danger'
+                                    onClick={handleClick}
+                                >
+                                    Add teammates
+                                </Button>
+                            </Box>
+                        ))}
+
+                    </List>
+                </Sheet>
             </Box>
             <Box
                 gridArea="plot"
@@ -103,13 +158,17 @@ const Driver: React.FC = () => {
                 padding="3em"
                 height="360px"
             >
-                <ResponsiveBump data={data}/>
+                {MyResponsiveBump(data)}
             </Box>
         </Box>
-    );
+    )
+        ;
 };
 
+// <ResponsiveBump data={data}/>
+//{MyResponsiveAreaBump(data)}
 export default Driver;
+
 
 const PageExplanation = (
     <>
@@ -120,3 +179,79 @@ const PageExplanation = (
         <Typography level="body1"> Explain how to use this page </Typography>
     </>
 );
+
+const MyResponsiveBump = (data: { id: string; data: { x: number | string; y: number }[]; }[]) => (
+    <ResponsiveBump
+        data={data}
+        margin={{top: 40, right: 100, bottom: 40, left: 60}}
+        axisRight={null}
+        colors={{scheme: 'spectral'}}
+        lineWidth={3}
+        activeLineWidth={6}
+        inactiveLineWidth={3}
+        inactiveOpacity={0.15}
+        pointSize={10}
+        activePointSize={16}
+        inactivePointSize={0}
+        pointColor={{theme: 'background'}}
+        pointBorderWidth={3}
+        activePointBorderWidth={3}
+        pointBorderColor={{from: 'serie.color'}}
+        axisTop={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legend: '',
+            legendPosition: 'middle',
+            legendOffset: -36
+        }}
+        axisBottom={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legend: '',
+            legendPosition: 'middle',
+            legendOffset: 32
+        }}
+        axisLeft={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legend: 'ranking',
+            legendPosition: 'middle',
+            legendOffset: -40
+        }}
+    />
+)
+
+const MyResponsiveAreaBump = (data: { id: string; data: { x: number | string; y: number; }[]; }[]) => (
+    <ResponsiveAreaBump
+        data={data}
+        margin={{top: 40, right: 100, bottom: 40, left: 100}}
+        interpolation="linear"
+        spacing={50} // line width
+        xPadding={0}
+        colors={{scheme: 'nivo'}}
+
+        blendMode="multiply"
+
+        //startLabel= id
+        //endLabel= "id"
+        axisTop={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legend: '',
+            legendPosition: 'middle',
+            legendOffset: -36
+        }}
+        axisBottom={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legend: '',
+            legendPosition: 'middle',
+            legendOffset: 32
+        }}
+    />
+)
