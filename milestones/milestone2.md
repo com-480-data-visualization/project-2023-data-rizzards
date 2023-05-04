@@ -4,7 +4,37 @@
 
 Our website is composed of 4 sections; one being the home page and the three others will contain specific visualizations of the Formula-1 data.
 
-### 1. Race
+### 1. Driver
+
+This page will show, for a given driver or a few selected ones, how the drivers' performance evolved over time. The user will see their ranking over different years as well as their cumulative points.
+
+##### Motivation:
+- The user will be able to see the evolution of their ranking during the years and compare it with other drivers.
+- From the cumulative points of a driver, we can visualize how they performed against others during a season.
+
+##### For context see this sketch:
+
+![driver visualisation](./images/drivers.png)
+
+###### Driver selection
+After selecting one or multiple drivers, they will appear on the list of selected drivers. Additionnaly, the user will also be able to click on 'Add Teammates' to automatically add all the drivers who have been teammates with to the selected list. There is two ways to deselect drivers; either by unchecking them, or clicking on the reset button.
+
+###### Driver visualization
+
+The rankings of the drivers will be shown over the years. Furthermore, by selecting a year, the user will see the cumulative points of each driver over the season - see below.
+
+![cumulative points visualisation](./images/points.png)
+
+
+##### Additional features:
+- The user can compare the relative performance of a single driver over different seasons.
+
+
+##### Tools used:
+- For the plots, we use the library [nivo](https://nivo.rocks/about/); and more specifically the tools [AreaBump](https://nivo.rocks/area-bump/) and [Bump](https://nivo.rocks/bump/).
+
+
+### 2. Race
 
 This page will focus on an animated visualization of the race. The user will be able to select a track and a driver and see their performance over different seasons/years.
 
@@ -37,20 +67,8 @@ The main focus is the track. The track will be animated and the user will be abl
 - To draw the track, we will use SVGs from this [repository](https://github.com/f1laps/f1-track-vectors).
 - To animate the dots over the track, we will directly manipulate the svg using [svg-path-properties](https://github.com/rveciana/svg-path-properties).
 
-### 2. Driver
 
-This section will show, for a given driver or a few selected ones, how the drivers' performance evolved over time.
-
-TODO: Include sketch and details.
-
-Additional features:
-
-- using colors, show which teams they raced for
-
-To help with visualization, the library [nivo](https://nivo.rocks/about/), and more specifically the tool [AreaBump](https://nivo.rocks/area-bump/).
-Furthermore, the lecture 5 on interactions will be helpful to get more insight on using the mouse to select from multiple choices and layering. The lecture 6 on perception colors and marks will be helpful to show informations using width, colors, and much more.
-
-### 3. Season
+### 3. Transport
 
 This section will show, for each year, a list of teams that participated, the schedule of the races and a flow map showing the movement of the teams during the year.
 Furthermore, we add a count of total kilometers traveled as well as an approximation of CO2 emission.
