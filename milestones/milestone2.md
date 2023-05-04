@@ -52,12 +52,34 @@ Furthermore, the lecture 5 on interactions will be helpful to get more insight o
 
 ### 3. Season
 
-This section will show, for each year, a list of teams that participated, the schedule of the races and a flow map showing the movement of the teams during the year.
-Furthermore, we add a count of total kilometers traveled as well as an approximation of CO2 emission.
--> lecture 8 is about maps
+For this visualisation, the main idea is to show the different locations of the circuits during the year. This will be shown via an animation on a map showing the position/country of each circuit with a travel animation between the countries in the order that the season is going.
 
-• Include sketches of the vizualiation you want to make in your final product.
-• List the tools that you will use for each visualization and which (past or future) lectures you will need.
-• Break down your goal into independent pieces to implement. Try to design a core visualization (minimal viable product) that will be required at the end.
-Then list extra ideas (more creative or challenging) that will enhance the visualization but could be dropped without endangering the meaning of the
-project.
+It will then be possible to see also the number of kilometres travelled during the season. This number is dynamically increased as the travel animations are going.
+It will also be possible to pause/resume the animation.
+
+To make it work for every season the user will choose the season wanted.
+
+![race visualisation](./images/dv_season.png)
+
+
+#### Additional features
+
+To make it even better one idea co uld to add data about which team and/or which pilot participated in which season.
+
+
+#### Tool used
+
+For this part the main module used will be [d3-geo](https://github.com/d3/d3-geo). We will also try to make it work with [nivo](https://nivo.rocks/about/) 
+module if possible so every page look the same. Furthermore we will look into what has been shown during lecture 8 which is
+talking about maps. We will also use material UI for building the rest of the webpage.
+
+#### Page decomposition
+
+In order to make it work we will decompose the site in mutliple parts :
+ - Data formating in order to embed only the data we need for this part
+ - The map animation and the pause/resume buttons
+ - The selection panel where we can select which season we want to see.
+ - The kilometers counter
+
+The selection panel and buttons will then interact on both kilometers counter and maps animation.
+
