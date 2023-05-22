@@ -1,5 +1,4 @@
 import React from "react";
-import {ResponsiveAreaBump, ResponsiveBump} from "@nivo/bump";
 import {useState} from "react";
 import Box from "@mui/joy/Box";
 import Button from '@mui/joy/Button';
@@ -9,6 +8,9 @@ import {Typography} from "@mui/joy";
 import List from "@mui/joy/List";
 import ListItem from "@mui/joy/ListItem";
 import Sheet from "@mui/joy/Sheet";
+import {MyResponsiveAreaBump} from "./MyResponsiveAreaBump";
+import {MyResponsiveBump} from "./MyResponsiveBump";
+
 
 const Driver: React.FC = () => {
 
@@ -273,7 +275,7 @@ const Driver: React.FC = () => {
                 padding="3em"
                 height="360px"
             >
-                {MyResponsiveBump(data)}
+                <MyResponsiveBump data={data}/>
             </Box>
             <Box
                 gridArea="plot2"
@@ -285,15 +287,13 @@ const Driver: React.FC = () => {
                 <Typography level="body1" textTransform="uppercase" fontWeight="lg">
                     Year: 2019
                 </Typography>
-                {MyResponsiveAreaBump(years)}
+                <MyResponsiveAreaBump data={years}/>
             </Box>
         </Box>
     )
         ;
 };
 
-// <ResponsiveBump data={data}/>
-//{MyResponsiveAreaBump(data)}
 export default Driver;
 
 const PageExplanation = (
@@ -306,62 +306,3 @@ const PageExplanation = (
     </>
 );
 
-const MyResponsiveBump = (data: { id: string; data: { x: number | string; y: number }[]; }[]) => (
-    <ResponsiveBump
-        data={data}
-        margin={{top: 40, right: 100, bottom: 40, left: 60}}
-        axisRight={null}
-        colors={{scheme: 'spectral'}}
-        lineWidth={3}
-        activeLineWidth={6}
-        inactiveLineWidth={3}
-        inactiveOpacity={0.15}
-        pointSize={10}
-        activePointSize={16}
-        inactivePointSize={0}
-        pointColor={{theme: 'background'}}
-        pointBorderWidth={3}
-        activePointBorderWidth={3}
-        pointBorderColor={{from: 'serie.color'}}
-        axisTop={null}
-        axisBottom={{
-            tickSize: 5,
-            tickPadding: 5,
-            tickRotation: 0,
-            legend: 'year',
-            legendPosition: 'middle',
-            legendOffset: 32
-        }}
-        axisLeft={{
-            tickSize: 5,
-            tickPadding: 5,
-            tickRotation: 0,
-            legend: 'ranking',
-            legendPosition: 'middle',
-            legendOffset: -40
-        }}
-    />
-)
-
-const MyResponsiveAreaBump = (data: { id: string; data: { x: number | string; y: number; }[]; }[]) => (
-    <ResponsiveAreaBump
-        data={data}
-        margin={{top: 40, right: 100, bottom: 40, left: 100}}
-        interpolation="linear"
-        spacing={50} // line width
-        xPadding={0}
-        colors={{scheme: 'nivo'}}
-
-        blendMode="multiply"
-
-        axisTop={null}
-        axisBottom={{
-            tickSize: 5,
-            tickPadding: 5,
-            tickRotation: 0,
-            legend: 'month',
-            legendPosition: 'middle',
-            legendOffset: 32
-        }}
-    />
-)
