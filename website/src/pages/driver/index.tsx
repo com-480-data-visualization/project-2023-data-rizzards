@@ -10,12 +10,19 @@ import ListItem from "@mui/joy/ListItem";
 import Sheet from "@mui/joy/Sheet";
 import {MyResponsiveAreaBump} from "./MyResponsiveAreaBump";
 import {MyResponsiveBump} from "./MyResponsiveBump";
-
+import data_rank from "../../data/data_rank.json";
+import data_points from "../../data/data_points.json";
+import driver_teammates from "../../data/driver_teammates.json";
 
 const Driver: React.FC = () => {
 
-    const [selectedDrivers, setSelectedDrivers] = useState<string[]>(['Hamilton']);
+    const [selectedDrivers, setSelectedDrivers] = useState<string[]>(['']);
     const [selectedYear, setSelectedYear] = useState<number>(2012);
+
+
+    const year_list = data_points.map(item => item.year).sort((a, b) => b - a);
+    const name_list = data_rank.map(item => item.id);
+
 
     const handleDriverSelectChange = (event: React.ChangeEvent<{}>, value: string | null) => {
         console.log('The driver was selected: ', value);
@@ -27,7 +34,7 @@ const Driver: React.FC = () => {
 
     const handleClickReset = () => {
         console.log('The Reset button was clicked.');
-        setSelectedDrivers(['Hamilton']);
+        setSelectedDrivers(['']);
         console.log('The drivers selected are now: ', selectedDrivers);
     };
 
@@ -41,75 +48,41 @@ const Driver: React.FC = () => {
         console.log('The drivers selected are now: ', selectedDrivers);
     };
 
-    const driver_teammates = [
-        {
-            id: "Hamilton",
-            data: [
-                "Alonso"
-            ],
-        },
-        {
-            id: "Alonso",
-            data: [
-                "Hamilton"
-            ],
-        },];
 
     function handleClickTeammates(driver : string) {
         console.log('The Add teammates button of ', driver,' was clicked.');
         const teammates = driver_teammates.find((item) => item.id === driver)?.data || [];
-        console.log('The teammates are ', teammates);
-        for (const value of teammates){
-            if (value !== null && !selectedDrivers.includes(value)) {
-                setSelectedDrivers([...selectedDrivers, value]);
-            }
-        }
+        const newDrivers = teammates.filter(value => value !== null && !selectedDrivers.includes(value)).slice(0, 5);
+        console.log('The 5 teammates are ', newDrivers);
+        setSelectedDrivers([...selectedDrivers, ...newDrivers]);
         console.log('The drivers selected are now: ', selectedDrivers);
     };
     function addDriverToList(driver : string) {
-        return(
-            <Box>
-                <ListItem>
-                    <ListItemContent>
-                        <Typography level="body1">{driver}</Typography>
-                    </ListItemContent>
-                    <Checkbox
+        if (driver != '') {
+            return (
+                <Box>
+                    <ListItem>
+                        <ListItemContent>
+                            <Typography level="body1">{driver}</Typography>
+                        </ListItemContent>
+                        <Checkbox
+                            color='danger'
+                            defaultChecked
+                            onClick={() => handleClickCheckbox(driver)}
+                        />
+                    </ListItem>
+                    <Button
+                        variant="outlined"
+                        size='sm'
                         color='danger'
-                        defaultChecked
-                        onClick={() => handleClickCheckbox(driver)}
-                    />
-                </ListItem>
-                <Button
-                    variant="outlined"
-                    size='sm'
-                    color='danger'
-                    onClick={() => handleClickTeammates(driver)}
-                >
-                    Add teammates
-                </Button>
-            </Box>);
+                        onClick={() => handleClickTeammates(driver)}
+                    >
+                        Add teammates
+                    </Button>
+                </Box>);
+        };
     };
 
-
-
-    const data_rank = [
-        {
-            id: "Alonso",
-            data: [
-                {x: 2000, y: 2},
-                {x: 2001,y: 3},
-                {x: 2002,y: 3},
-            ],
-        },
-        {
-            id: "Hamilton",
-            data: [
-                {x: 2000,y: 1,},
-                {x: 2001,y: 2,},
-                {x: 2002,y: 1,},
-            ],
-        },];
-    const name_list = data_rank.map(item => item.id);
 
     const handleYearSelectChange = (event: React.ChangeEvent<{}>, value: number | null) => {
         console.log('The year was selected: ', value);
@@ -119,73 +92,7 @@ const Driver: React.FC = () => {
 
     };
 
-    const data_points = [
-        {
-            year: 2012,
-            year_data: [
-                {
-                    id: "Alonso",
-                    data: [
-                        {x: 0, y: 0,},
-                        {x: 1, y: 3,},
-                        {x: 2, y: 3,},
-                        {x: 3, y: 5,},
-                        {x: 4, y: 15,},
-                        {x: 5, y: 20,},
-                        {x: 6, y: 25,},
-                        {x: 7, y: 30,},
-                        {x: 8, y: 31,},
-                        {x: 9, y: 35,},
-                        {x: 10, y: 40,},
-                        {x: 11, y: 45,},
-                        {x: 12, y: 50,},
-                    ],
-                },
-                {
-                    id: "Hamilton",
-                    data: [
-                        {x: 0, y: 0,},
-                        {x: 1, y: 6,},
-                        {x: 2, y: 7,},
-                        {x: 3, y: 10,},
-                        {x: 4, y: 15,},
-                        {x: 5, y: 20,},
-                        {x: 6, y: 21,},
-                        {x: 7, y: 25,},
-                        {x: 8, y: 28,},
-                        {x: 9, y: 30,},
-                        {x: 10, y: 40,},
-                        {x: 11, y: 41,},
-                        {x: 12, y: 42,},
-                    ],
-                },
-            ],
-        },
-        {
-            year: 2013,
-            year_data: [
-                {
-                    id: "Alonso",
-                    data: [
-                        {x: 0,y: 0,},
-                        {x: 1,y: 3,},
-                        {x: 2,y: 3,},
-                        {x: 3,y: 5,},
-                        {x: 4,y: 15,},
-                        {x: 5,y: 20,},
-                        {x: 6,y: 25,},
-                        {x: 7,y: 30,},
-                        {x: 8,y: 31,},
-                        {x: 9,y: 35,},
-                        {x: 10,y: 40,},
-                        {x: 11,y: 45,},
-                        {x: 12,y: 50,},
-                    ],
-                },
-            ],
-        },
-    ];
-    const year_list = data_points.map(item => item.year);
+
 
     return (
         <Box
