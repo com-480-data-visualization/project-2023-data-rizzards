@@ -17,22 +17,35 @@ import driver_teammates from "../../data/driver_teammates.json";
 const Driver: React.FC = () => {
 
     const [selectedDrivers, setSelectedDrivers] = useState<string[]>(['']);
-    const [selectedYear, setSelectedYear] = useState<number>(2012);
+    const [selectedYear, setSelectedYear] = useState<number>(2022);
+    const [selectedYearRange, setSelectedYearRange] = useState<number[]>(Array.from({ length: 2022 - 1950 + 1 }, (_, i) => 1950 + i));
 
 
     const year_list = data_points.map(item => item.year).sort((a, b) => b - a);
     const name_list = data_rank.map(item => item.id);
 
+    function updateSelectedYearRange (driver: string |null) {
+        const yearRange = data_rank
+            .filter((item) =>  driver == item.id)
+            .map((item) => item.data.map((item) => item.x))
+            .flat();
+        console.log('yearRange',yearRange)
+        setSelectedYearRange(yearRange)
+        console.log('selectedYearRange',selectedYearRange)
+    }
 
-    const handleDriverSelectChange = (event: React.ChangeEvent<{}>, value: string | null) => {
+    function handleDriverSelectChange (event: React.ChangeEvent<{}>, value: string | null) {
         console.log('The driver was selected: ', value);
         if (value !== null && !selectedDrivers.includes(value)) {
             setSelectedDrivers([...selectedDrivers, value]);
         }
         console.log('The drivers selected are now: ', selectedDrivers);
+        if (selectedDrivers.length == 1) { updateSelectedYearRange(value) }
+        else { updateSelectedYearRange(selectedDrivers[1]) }
+
     };
 
-    const handleClickReset = () => {
+    function handleClickReset () {
         console.log('The Reset button was clicked.');
         setSelectedDrivers(['']);
         console.log('The drivers selected are now: ', selectedDrivers);
@@ -46,6 +59,7 @@ const Driver: React.FC = () => {
         }
         setSelectedDrivers(selectedDrivers.filter((item) => item !== driver));
         console.log('The drivers selected are now: ', selectedDrivers);
+        updateSelectedYearRange(selectedDrivers[1])
     };
 
 
@@ -56,6 +70,7 @@ const Driver: React.FC = () => {
         console.log('The 5 teammates are ', newDrivers);
         setSelectedDrivers([...selectedDrivers, ...newDrivers]);
         console.log('The drivers selected are now: ', selectedDrivers);
+        updateSelectedYearRange(selectedDrivers[1])
     };
     function addDriverToList(driver : string) {
         if (driver != '') {
@@ -84,12 +99,11 @@ const Driver: React.FC = () => {
     };
 
 
-    const handleYearSelectChange = (event: React.ChangeEvent<{}>, value: number | null) => {
+    function handleYearSelectChange (event: React.ChangeEvent<{}>, value: number | null) {
         console.log('The year was selected: ', value);
         if (value !== null) {
             setSelectedYear(value);
         }
-
     };
 
 
@@ -160,8 +174,16 @@ const Driver: React.FC = () => {
                 padding="3em"
                 height="360px"
             >
-                <MyResponsiveBump data={data_rank.filter((item)=>
-                    selectedDrivers.includes(item.id))}/>
+
+                <MyResponsiveBump data={
+                    data_rank
+                        .filter((item)=> selectedDrivers.includes(item.id))
+                        .filter((item) => {
+                            item.data = item.data.filter(data => selectedYearRange.includes(data.x));
+                            if (item.data.length != 0){return item;}
+                            else{console.log('Did not drive during the same years range')}
+                        })
+                }/>
             </Box>
             <Box
                 gridArea="plot2"
