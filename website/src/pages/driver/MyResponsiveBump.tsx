@@ -8,7 +8,7 @@ export const MyResponsiveBump = (props : MyResponsiveBumpProps) => {
     return (
         <ResponsiveBump
             data={props.data}
-            margin={{top: 40, right: 100, bottom: 40, left: 60}}
+            margin={{top: 40, right: 100, bottom: 60, left: 60}}
             axisRight={null}
             colors={{scheme: 'spectral'}}
             lineWidth={3}
@@ -26,10 +26,10 @@ export const MyResponsiveBump = (props : MyResponsiveBumpProps) => {
             axisBottom={{
                 tickSize: 5,
                 tickPadding: 5,
-                tickRotation: 0,
+                tickRotation: -45,
                 legend: 'year',
                 legendPosition: 'middle',
-                legendOffset: 32
+                legendOffset: 50
             }}
             axisLeft={{
                 tickSize: 5,

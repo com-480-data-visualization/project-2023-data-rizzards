@@ -9,7 +9,7 @@ export const MyResponsiveAreaBump = (props : MyResponsiveBumpProps) => {
     return(
     <ResponsiveAreaBump
         data={props.data}
-        margin={{top: 40, right: 100, bottom: 40, left: 100}}
+        margin={{top: 40, right: 100, bottom: 60, left: 100}}
         interpolation="linear"
         spacing={50} // line width
         xPadding={0}
@@ -21,10 +21,9 @@ export const MyResponsiveAreaBump = (props : MyResponsiveBumpProps) => {
         axisBottom={{
             tickSize: 5,
             tickPadding: 5,
-            tickRotation: 0,
-            legend: 'month',
+            tickRotation: -45,
             legendPosition: 'middle',
-            legendOffset: 32
+            legendOffset: 60
         }}
     />
     );

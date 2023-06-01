@@ -116,7 +116,7 @@ const Driver: React.FC = () => {
             gridTemplateAreas={`"para para" 
               "inputs inputs"
               "list plot"
-              "plot2 plot2"`}
+              "list plot2"`}
             gap={4}
         >
             <Box gridArea="para" padding="2em">
