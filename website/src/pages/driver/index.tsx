@@ -24,13 +24,14 @@ const Driver: React.FC = () => {
     const year_list = data_points.map(item => item.year).sort((a, b) => b - a);
     const name_list = data_rank.map(item => item.id);
 
-    function updateSelectedYearRange (driver: string |null) {
-        const yearRange = data_rank
-            .filter((item) =>  driver == item.id)
-            .map((item) => item.data.map((item) => item.x))
-            .flat();
-        console.log('yearRange',yearRange)
-        setSelectedYearRange(yearRange)
+    function updateSelectedYearRange (drivers: string[]) {
+        const yearRange = new Set(
+            data_rank
+                .filter((item) => drivers.includes(item.id))
+                .flatMap((item) => item.data.map((item) => item.x)));
+
+        console.log('yearRange',yearRange);
+        setSelectedYearRange(Array.from(yearRange).sort());
         console.log('selectedYearRange',selectedYearRange)
     }
 
@@ -38,11 +39,9 @@ const Driver: React.FC = () => {
         console.log('The driver was selected: ', value);
         if (value !== null && !selectedDrivers.includes(value)) {
             setSelectedDrivers([...selectedDrivers, value]);
+            updateSelectedYearRange([...selectedDrivers, value]);
         }
         console.log('The drivers selected are now: ', selectedDrivers);
-        if (selectedDrivers.length == 1) { updateSelectedYearRange(value) }
-        else { updateSelectedYearRange(selectedDrivers[1]) }
-
     };
 
     function handleClickReset () {
@@ -59,7 +58,7 @@ const Driver: React.FC = () => {
         }
         setSelectedDrivers(selectedDrivers.filter((item) => item !== driver));
         console.log('The drivers selected are now: ', selectedDrivers);
-        updateSelectedYearRange(selectedDrivers[1])
+        updateSelectedYearRange(selectedDrivers.filter((item) => item !== driver));
     };
 
 
@@ -70,10 +69,10 @@ const Driver: React.FC = () => {
         console.log('The 5 teammates are ', newDrivers);
         setSelectedDrivers([...selectedDrivers, ...newDrivers]);
         console.log('The drivers selected are now: ', selectedDrivers);
-        updateSelectedYearRange(selectedDrivers[1])
+        updateSelectedYearRange([...selectedDrivers, ...newDrivers])
     };
     function addDriverToList(driver : string) {
-        if (driver != '') {
+        if (driver !== '') {
             return (
                 <Box>
                     <ListItem>
@@ -174,14 +173,19 @@ const Driver: React.FC = () => {
                 padding="3em"
                 height="360px"
             >
-
                 <MyResponsiveBump data={
                     data_rank
                         .filter((item)=> selectedDrivers.includes(item.id))
-                        .filter((item) => {
-                            item.data = item.data.filter(data => selectedYearRange.includes(data.x));
-                            if (item.data.length != 0){return item;}
-                            else{console.log('Did not drive during the same years range')}
+                        .map((item) => {
+                            if (selectedYearRange && selectedYearRange.length > 0) {
+                                const pointsPerYear = new Map(item.data.map(entry => [entry.x, entry.y]));
+                                item.data = selectedYearRange.map(year => ({
+                                    x: year,
+                                    y: pointsPerYear.get(year) ?? null
+                                }));
+                            }
+
+                            return item;
                         })
                 }/>
             </Box>
