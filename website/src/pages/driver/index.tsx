@@ -178,7 +178,7 @@ const Driver: React.FC = () => {
                 gridArea="plot"
                 display="flex"
                 flexDirection="column"
-                padding="3em"
+                padding="1em"
                 height="360px"
             >
                 <Box gridArea="para" padding="2em">
@@ -239,17 +239,21 @@ const PageExplanation = (
         </Typography>
         <br/>
         <Typography level="body1">
-            Explain how to use this page
-            This page shows, for a given driver or a few selected ones, how the drivers' performance evolved over time. The user will see their ranking over different years as well as their cumulative points.
-            </Typography>
+
+            Here you can explore the performance evolution of various drivers over time.
+            Gain insights into their rankings across different years or track their cumulative points throughout a selected year.
+
+            <br/> <br/>
+            Select a driver or multiples, add their teammates or uncheck some, or reset all selections.
+
+        </Typography>
     </>
 );
 
 const Plot1Explanation = (
     <>
         <Typography level="body1">
-            Explain how to use this page
-            The user will be able to see the evolution of their ranking during the years and compare it with other drivers.
+            Here is the evolution of rankings during the years for the selected drivers.
         </Typography>
     </>
 );
@@ -257,8 +261,8 @@ const Plot1Explanation = (
 const Plot2Explanation = (
     <>
         <Typography level="body1">
-            Explain how to use this page
-            From the cumulative points of a driver, we can visualize how they performed against others during a season.
+            Here is the evolution of cumulative points during a year for the selected drivers.
+            You can visualize how they performed against others during a season.
         </Typography>
     </>
 );

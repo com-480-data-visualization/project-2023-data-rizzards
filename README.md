@@ -20,6 +20,12 @@ See [milestone2.md](milestones/milestone2.md)
 
 **80% of the final grade**
 
+- Website link
+- [ProcessBook.md](milestones/ProcessBook.md)
+- Screencast link
+
+-> Add explaination of  the technical setup and intended usage 
+
 ## Late policy
 
 - < 24h: 80% of the grade for the milestone

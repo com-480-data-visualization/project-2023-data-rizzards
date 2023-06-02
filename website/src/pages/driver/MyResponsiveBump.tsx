@@ -34,12 +34,7 @@ export const MyResponsiveBump = (props : MyResponsiveBumpProps) => {
             //{scheme: 'category10'}}
             //nivo(light) category10(dark) dark2(dark) set2
             lineWidth={3}
-            activeLineWidth={6}
-            inactiveLineWidth={3}
-            inactiveOpacity={0.15}
             pointSize={10}
-            activePointSize={16}
-            inactivePointSize={0}
             pointColor={{theme: 'background'}}
             pointBorderWidth={3}
             activePointBorderWidth={3}
