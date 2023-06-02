@@ -16,19 +16,24 @@ import driver_teammates from "../../data/driver_teammates.json";
 
 const Driver: React.FC = () => {
 
-    const [selectedDrivers, setSelectedDrivers] = useState<string[]>(['']);
+    const [selectedDrivers, setSelectedDrivers] = useState<string[]>([]);
     const [selectedYear, setSelectedYear] = useState<number>(2022);
     const [selectedYearRange, setSelectedYearRange] = useState<number[]>(Array.from({ length: 2022 - 1950 + 1 }, (_, i) => 1950 + i));
 
-
-    const year_list = data_points.map(item => item.year).sort((a, b) => b - a);
+    //const year_list = data_points.map(item => item.year).sort((a, b) => b - a);
     const name_list = data_rank.map(item => item.id);
 
     function updateSelectedYearRange (drivers: string[]) {
         const yearRange = new Set(
             data_rank
                 .filter((item) => drivers.includes(item.id))
-                .flatMap((item) => item.data.map((item) => item.x)));
+                .flatMap((item) =>
+                    item.data
+                        .filter((item) => item.y != null)
+                        .map((item) => {
+                    return item.x
+                }))
+        );
 
         console.log('yearRange',yearRange);
         setSelectedYearRange(Array.from(yearRange).sort());
@@ -46,33 +51,35 @@ const Driver: React.FC = () => {
 
     function handleClickReset () {
         console.log('The Reset button was clicked.');
-        setSelectedDrivers(['']);
+        setSelectedDrivers([]);
         console.log('The drivers selected are now: ', selectedDrivers);
     };
 
     function handleClickCheckbox(driver: string) {
         console.log('The Checkbox of ', driver, ' was clicked.');
-        if (selectedDrivers.length === 1) {
+        if (selectedDrivers.length === 0) {
             console.log('Cannot remove the last driver.');
             return;
         }
-        setSelectedDrivers(selectedDrivers.filter((item) => item !== driver));
-        console.log('The drivers selected are now: ', selectedDrivers);
-        updateSelectedYearRange(selectedDrivers.filter((item) => item !== driver));
+        const updatedSelectedDrivers = selectedDrivers.filter((item) => item !== driver);
+
+        setSelectedDrivers(updatedSelectedDrivers);
+        console.log('The drivers selected are now: ', updatedSelectedDrivers);
+        updateSelectedYearRange(updatedSelectedDrivers);
     };
 
 
     function handleClickTeammates(driver : string) {
         console.log('The Add teammates button of ', driver,' was clicked.');
         const teammates = driver_teammates.find((item) => item.id === driver)?.data || [];
-        const newDrivers = teammates.filter(value => value !== null && !selectedDrivers.includes(value)).slice(0, 5);
+        const newDrivers = teammates.filter(value => value !== null && !selectedDrivers.includes(value));
         console.log('The 5 teammates are ', newDrivers);
         setSelectedDrivers([...selectedDrivers, ...newDrivers]);
         console.log('The drivers selected are now: ', selectedDrivers);
         updateSelectedYearRange([...selectedDrivers, ...newDrivers])
     };
     function addDriverToList(driver : string) {
-        if (driver !== '') {
+        if (driver !== null) {
             return (
                 <Box>
                     <ListItem>
@@ -116,7 +123,7 @@ const Driver: React.FC = () => {
               "inputs inputs"
               "list plot"
               "list plot2"`}
-            gap={4}
+
         >
             <Box gridArea="para" padding="2em">
                 {PageExplanation}
@@ -156,7 +163,7 @@ const Driver: React.FC = () => {
                 textAlign="center"
                 sx={{padding: "5%"}}
             >
-                <Sheet variant="soft" sx={{padding: "1em"}}>
+                <Sheet variant="soft" sx={{padding: "1em"}} style={{maxHeight: 800, overflow: 'auto'}}>
                     <Typography level="body1" textTransform="uppercase" fontWeight="lg">
                         List of selected drivers
                     </Typography>
@@ -170,9 +177,13 @@ const Driver: React.FC = () => {
             <Box
                 gridArea="plot"
                 display="flex"
+                flexDirection="column"
                 padding="3em"
                 height="360px"
             >
+                <Box gridArea="para" padding="2em">
+                    {Plot1Explanation}
+                </Box>
                 <MyResponsiveBump data={
                     data_rank
                         .filter((item)=> selectedDrivers.includes(item.id))
@@ -184,7 +195,6 @@ const Driver: React.FC = () => {
                                     y: pointsPerYear.get(year) ?? null
                                 }));
                             }
-
                             return item;
                         })
                 }/>
@@ -196,11 +206,14 @@ const Driver: React.FC = () => {
                 padding="3em"
                 height="360px"
             >
+                <Box gridArea="para" padding="2em">
+                    {Plot2Explanation}
+                </Box>
                 <label>
                     <FormLabel>Select a year:</FormLabel>
                     <Autocomplete
                         placeholder="Year"
-                        options={year_list}
+                        options={selectedYearRange}
                         getOptionLabel={(option) => String(option)}
                         onChange={handleYearSelectChange}
                     />
@@ -225,7 +238,27 @@ const PageExplanation = (
             Overview of the drivers' seasons
         </Typography>
         <br/>
-        <Typography level="body1"> Explain how to use this page </Typography>
+        <Typography level="body1">
+            Explain how to use this page
+            This page shows, for a given driver or a few selected ones, how the drivers' performance evolved over time. The user will see their ranking over different years as well as their cumulative points.
+            </Typography>
     </>
 );
 
+const Plot1Explanation = (
+    <>
+        <Typography level="body1">
+            Explain how to use this page
+            The user will be able to see the evolution of their ranking during the years and compare it with other drivers.
+        </Typography>
+    </>
+);
+
+const Plot2Explanation = (
+    <>
+        <Typography level="body1">
+            Explain how to use this page
+            From the cumulative points of a driver, we can visualize how they performed against others during a season.
+        </Typography>
+    </>
+);
