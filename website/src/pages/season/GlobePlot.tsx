@@ -5,6 +5,7 @@ import * as topojson from "topojson-client";
 import { select as d3Select } from "d3-selection";
 import "d3-transition";
 import names from "./world-country-names.json";
+import races from "./race_f1_new.json";
 
 const Title = styled.h1`
   position: absolute;
@@ -15,9 +16,27 @@ const Title = styled.h1`
   width: 720px;
 `;
 
-const GlobePlot: React.FC = () => {
+interface CurrentSeason {
+    selectedS : string;
+}
+
+interface JsSeason {
+    round: number;
+    year: number;
+    location: string;
+    country: string;
+    lat: number;
+    lng: number;
+    id: number;
+    show_c : boolean;
+}
+
+const GlobePlot: React.FC<CurrentSeason> = ({selectedS}) => {
     const globeRef = useRef<HTMLDivElement | null>(null);
     const titleRef = useRef<HTMLHeadingElement | null>(null);
+    const jsonData: { [key: string]: JsSeason[] } = races;
+
+    let is = [0], n = 0;
 
     useEffect(() => {
         if (!globeRef.current) return;
@@ -83,8 +102,8 @@ const GlobePlot: React.FC = () => {
                             return a !== b;
                         }
                     ),
-                    i = -1,
-                    n = countries.length;
+                    i = -1;
+
 
                 let p1 = [0, 0] as [number, number],
                     p2 = [0, 0] as [number, number];
@@ -104,6 +123,41 @@ const GlobePlot: React.FC = () => {
                         else return 0;
                     });
 
+
+                //here we try to find matching countries
+                //const currentSeasonYear = parseInt(selectedS);
+                let ids_of_the_season : number[] = [];
+
+                let countries_not_found: string[] = [];
+
+
+                for(let i = 0; i < jsonData[selectedS].length; i++){
+
+                    let has_been_found = false;
+                    for(let j = 0; j < countries.length; j++){
+                        if(countries[j].id == jsonData[selectedS][i].id.toString()){
+                            ids_of_the_season.push(j);
+                            has_been_found = true;
+                        }
+
+                    }
+
+                    if(!has_been_found){
+                        countries_not_found.push(jsonData[selectedS][i].country);
+                    }
+
+                }
+
+                if(countries.length != 0){
+                    console.log(countries_not_found);
+                }
+
+
+                is = ids_of_the_season;
+                n = is.length;
+
+
+
                 console.debug("starting transition");
 
                 (function transition() {
@@ -112,18 +166,21 @@ const GlobePlot: React.FC = () => {
                     d3.transition("traverse_countries")
                         .duration(1250)
                         .on("start", function () {
+                            i = (i + 1) % n;
+
                             title.text(
-                                countries[(i = (i + 1) % n)]?.properties.name || "Unknown"
+                                //countries[is[(i = (i + 1) % n)]]?.properties.name || "Unknown"
+                                jsonData[selectedS][i % n]?.location + " - " + jsonData[selectedS][i % n]?.country || "Unknown"
                             );
                             p1 = p2;
-                            p2 = d3.geoCentroid(countries[i]);
+                            p2 = d3.geoCentroid(countries[is[i]]);
 
                             ip = d3.geoInterpolate(p1, p2);
 
 
                         })
                         .tween("rotate", function () {
-                            const p = d3.geoCentroid(countries[i]),
+                            const p = d3.geoCentroid(countries[is[i]]),
                                 r = d3.interpolate<[number, number]>(projection.rotate(), [
                                     -p[0],
                                     -p[1],
@@ -134,12 +191,18 @@ const GlobePlot: React.FC = () => {
                                 c.clearRect(0, 0, width, height);
                                 /* eslint-disable @typescript-eslint/no-unused-expressions */
                                 (c.fillStyle = "#ccc"), c.beginPath(), path(land), c.fill();
-                                (c.fillStyle = "#f00"), c.beginPath(), path(countries[i]), c.fill();
+
+                                if(jsonData[selectedS][i].show_c){
+                                    (c.fillStyle = "#f00"), c.beginPath(), path(countries[is[i]]), c.fill();
+                                }
                                 (c.strokeStyle = "#fff"), (c.lineWidth = 0.5), c.beginPath(), path(borders), c.stroke();
                                 (c.strokeStyle = "#000"), (c.lineWidth = 2), c.beginPath(), path(globe), c.stroke();
-                                (c.lineWidth = 1), c.beginPath(), path(
-                                    {type: "LineString", coordinates: [p1, ip(t)]}
-                                ), c.stroke();
+
+                                if(i != 0){
+                                    (c.lineWidth = 1), c.beginPath(), path(
+                                        {type: "LineString", coordinates: [p1, ip(t)]}
+                                    ), c.stroke();
+                                }
                                 /* eslint-enable @typescript-eslint/no-unused-expressions */
                             };
                         })
@@ -151,12 +214,18 @@ const GlobePlot: React.FC = () => {
                             /* eslint-disable @typescript-eslint/no-unused-expressions */
                             c.clearRect(0, 0, width, height);
                             (c.fillStyle = "#ccc"), c.beginPath(), path(land), c.fill();
-                            (c.fillStyle = "#f00"), c.beginPath(), path(countries[i]), c.fill();
+                            if(jsonData[selectedS][i].show_c){
+                                (c.fillStyle = "#f00"), c.beginPath(), path(countries[is[i]]), c.fill();
+                            }
                             (c.strokeStyle = "#fff"), (c.lineWidth = 0.5), c.beginPath(), path(borders), c.stroke();
                             (c.strokeStyle = "#000"), (c.lineWidth = 2), c.beginPath(), path(globe), c.stroke();
-                            (c.lineWidth = 1), c.beginPath(), path(
-                                {type: "LineString", coordinates: [ip(t), p2]}
-                            ), c.stroke();
+
+                            if(i != 0){
+                                (c.lineWidth = 1), c.beginPath(), path(
+                                    {type: "LineString", coordinates: [ip(t), p2]}
+                                ), c.stroke();
+                            }
+
                             /* eslint-enable @typescript-eslint/no-unused-expressions */
                         })
                         .on("end", transition);
@@ -170,7 +239,7 @@ const GlobePlot: React.FC = () => {
                 canvas.remove();
             };
         }
-    }, []);
+    }, [selectedS]);
 
     return (
         <div ref={globeRef}>
