@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import styled from "styled-components";
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
@@ -6,6 +6,8 @@ import { select as d3Select } from "d3-selection";
 import "d3-transition";
 import names from "./world-country-names.json";
 import races from "./race_f1_new.json";
+import CountUpComponent from './MyCountup'
+import {totalmem} from "os";
 
 const Title = styled.h1`
   position: absolute;
@@ -36,7 +38,31 @@ const GlobePlot: React.FC<CurrentSeason> = ({selectedS}) => {
     const titleRef = useRef<HTMLHeadingElement | null>(null);
     const jsonData: { [key: string]: JsSeason[] } = races;
 
+    const [currentKmNb, setCurrentKmNb] = useState(0);
+    let cumulTotalKm = 0;
+
+
     let is = [0], n = 0;
+
+
+    const getKm: (lon1: number, lat1: number, lat2: number, lon2:number) => number = (lon1, lat1, lon2, lat2 ) => {
+
+        const R = 6371e3; // metres
+        const φ1 = lat1 * Math.PI/180; // φ, λ in radians
+        const φ2 = lat2 * Math.PI/180;
+        const Δφ = (lat2-lat1) * Math.PI/180;
+        const Δλ = (lon2-lon1) * Math.PI/180;
+
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        const d = R * c; // in metres
+
+        return Math.floor(d/1000);
+
+    };
+
+
 
     useEffect(() => {
         if (!globeRef.current) return;
@@ -163,6 +189,8 @@ const GlobePlot: React.FC<CurrentSeason> = ({selectedS}) => {
                 (function transition() {
                     console.debug("transition");
 
+
+
                     d3.transition("traverse_countries")
                         .duration(1250)
                         .on("start", function () {
@@ -178,8 +206,31 @@ const GlobePlot: React.FC<CurrentSeason> = ({selectedS}) => {
                             ip = d3.geoInterpolate(p1, p2);
 
 
+                            //calcul the Kms
+                            if(i != 0){
+                                const lon1 = jsonData[selectedS][i-1].lng;
+                                const lat1 = jsonData[selectedS][i-1].lat;
+
+                                const lon2 = jsonData[selectedS][i].lng;
+                                const lat2 = jsonData[selectedS][i].lat;
+
+                                const diff = getKm(lon1, lat1, lon2, lat2);
+                                console.log(diff);
+                                cumulTotalKm += diff;
+                                setCurrentKmNb(cumulTotalKm);
+
+                            } else {
+                                cumulTotalKm = 0;
+                                setCurrentKmNb(cumulTotalKm);
+                            }
+
+
+
+
+
                         })
                         .tween("rotate", function () {
+
                             const p = d3.geoCentroid(countries[is[i]]),
                                 r = d3.interpolate<[number, number]>(projection.rotate(), [
                                     -p[0],
@@ -187,6 +238,7 @@ const GlobePlot: React.FC<CurrentSeason> = ({selectedS}) => {
                                 ]);
 
                             return function (t) {
+
                                 projection.rotate(r(t) as [number, number]);
                                 c.clearRect(0, 0, width, height);
                                 /* eslint-disable @typescript-eslint/no-unused-expressions */
@@ -241,9 +293,26 @@ const GlobePlot: React.FC<CurrentSeason> = ({selectedS}) => {
         }
     }, [selectedS]);
 
+
+    const countupStyle: React.CSSProperties = {
+        color: 'red',
+        fontSize: '50px',
+        textAlign: 'center'
+    };
+
     return (
-        <div ref={globeRef}>
-            <Title ref={titleRef}></Title>
+
+        <div>
+            <div ref={globeRef}>
+                <Title ref={titleRef}></Title>
+            </div>
+
+            <div style={countupStyle}>
+                <CountUpComponent km={currentKmNb}></CountUpComponent> KM
+            </div>
+
+
+
         </div>
     );
 };
