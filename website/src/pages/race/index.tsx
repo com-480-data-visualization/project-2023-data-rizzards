@@ -1,20 +1,24 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import Typography from "@mui/joy/Typography";
 import {
   Autocomplete,
   AutocompleteOption,
   Box,
   Button,
+  Checkbox,
   FormLabel,
   List,
+  ListDivider,
   ListItem,
   ListItemContent,
   ListItemDecorator,
+  Sheet,
 } from "@mui/joy";
 import { Track } from "./Track";
 
 import circuits from "../../data/race/circuits.json";
 import drivers from "../../data/race/drivers.json";
+import allResults from "../../data/race/results.json";
 import allLapTimes from "../../data/race/lap_times.json";
 import {
   Circuit,
@@ -23,24 +27,23 @@ import {
   Drivers,
   LapTimes,
   RawLapTimes,
+  Result,
+  Results,
 } from "./data_types";
-import { InfoList, RaceItems } from "./InfoList";
-
-import "./index.css";
+import { ErrorBoundary } from "../../components/ErrorBoundary";
 
 const Race: React.FC = () => {
-  const [selectedCircuit, setSelectedCircuit] = useState<Circuit | null>();
-  const [selectedDriver, setSelectedDriver] = useState<Driver | null>();
-  const [initialSelectedYears, setInitialSelectedYears] = useState<number[]>(
-    []
-  );
-  const [items, setItems] = useState<RaceItems>();
+  const [selectedCircuit, setSelectedCircuit] = useState<Circuit | null>(null);
+  const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
+  const [selectedItems, setSelectedItems] = useState<Result[]>([]);
+
+  const races: Results = allResults as Results;
 
   const lapTimes: LapTimes = useMemo(() => {
-    if (!selectedDriver || !items) return {};
+    if (!selectedDriver || !selectedItems) return {};
 
     const filteredData: LapTimes = {};
-    for (const item of items) {
+    for (const item of selectedItems) {
       const index = `(${selectedDriver.driverId}, ${item.raceId})`;
       const dataItem = (allLapTimes as RawLapTimes)[index];
       if (dataItem) {
@@ -48,11 +51,35 @@ const Race: React.FC = () => {
       }
     }
     return filteredData;
-  }, [items, selectedDriver]);
+  }, [selectedItems, selectedDriver]);
 
-  console.log("rendering race page");
-  // make a grid using CSS grid, with 2 columns and 2 rows.
-  // the first row is for the inputs, the second row is for the driver-list and track.
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  // This function will ensure all states are updated before the component rerenders
+  const setPresetData = useCallback(
+    async (
+      driverCode: string,
+      circuitLocation: string,
+      raceYears: number[]
+    ) => {
+      const circuit = circuits.find(
+        (circuit) => circuit.location === circuitLocation
+      )!;
+      setSelectedCircuit((_) => circuit);
+
+      const driver = drivers.find((driver) => driver.code === driverCode)!;
+      setSelectedDriver(() => driver);
+
+      const items = races[`(${driver.driverId}, ${circuit.circuitId})`].filter(
+        (race) => raceYears.includes(race.year)
+      );
+      setSelectedItems((_) => items);
+
+      setIsDataLoaded(true);
+    },
+    [circuits, drivers, races]
+  );
+
   return (
     <Box
       display="grid"
@@ -130,15 +157,7 @@ const Race: React.FC = () => {
                   color="danger"
                   onClick={(event) => {
                     event.preventDefault();
-                    setSelectedCircuit(
-                      circuits.find(
-                        (circuit) => circuit.location === "Silverstone"
-                      )
-                    );
-                    setSelectedDriver(
-                      drivers.find((driver) => driver.code === "HAM")
-                    );
-                    setInitialSelectedYears([2021, 2022]);
+                    setPresetData("HAM", "Silverstone", [2021, 2022]);
                   }}
                 >
                   VIEW
@@ -158,7 +177,14 @@ const Race: React.FC = () => {
                   validate this claim by looking at his performance on the same
                   tracks while in different teams. <br />
                 </ListItemContent>
-                <Button variant="soft" color="danger">
+                <Button
+                  variant="soft"
+                  color="danger"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setPresetData("RIC", "Budapest", [2018, 2019, 2021]);
+                  }}
+                >
                   VIEW
                 </Button>
               </ListItem>
@@ -176,11 +202,24 @@ const Race: React.FC = () => {
                   2019-2021 seasons, while he was driving a relatively similar
                   car. <br />
                 </ListItemContent>
-                <Button variant="soft" color="danger">
+                <Button
+                  variant="soft"
+                  color="danger"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setPresetData("LEC", "Abu Dhabi", [2019, 2020, 2021]);
+                  }}
+                >
                   VIEW
                 </Button>
               </ListItem>
             </List>
+          </Typography>
+          <Typography level="body2" textAlign="center">
+            <i>
+              You might need to click the button a few times to get the
+              animation to start properly.
+            </i>
           </Typography>
         </Box>
       </Box>
@@ -245,32 +284,133 @@ const Race: React.FC = () => {
       <Box
         gridArea="vis"
         display="flex"
-        justifyContent="space-evenly"
+        justifyContent="center"
         alignItems="center"
+        gap={4}
       >
-        <Box sx={{ width: "20%" }}>
+        <Box sx={{ width: "25%" }}>
           {selectedCircuit && selectedDriver && (
-            <InfoList
-              initialSelection={initialSelectedYears}
-              circuit={selectedCircuit}
-              driver={selectedDriver}
-              onSelectionChange={(items) => setItems(items)}
-            />
+            <Sheet variant="soft" sx={{ padding: "1em", borderRadius: "1em" }}>
+              {races == null ? (
+                <Typography
+                  level="body1"
+                  textTransform="uppercase"
+                  fontWeight="lg"
+                  color="info"
+                >
+                  {selectedDriver.name ?? "This driver"} {" has not raced at "}
+                  {selectedCircuit.name ?? "this circuit"}.
+                </Typography>
+              ) : (
+                <>
+                  <Typography
+                    level="body1"
+                    textTransform="uppercase"
+                    fontWeight="lg"
+                  >
+                    Seasons
+                  </Typography>
+                  <List sx={{ padding: "5%" }}>
+                    {races[
+                      `(${selectedDriver.driverId}, ${selectedCircuit.circuitId})`
+                    ]
+                      .sort((a, b) => a.year - b.year)
+                      .flatMap((item, index) => {
+                        const didSwitchTeams =
+                          index !== 0 &&
+                          item.constructorName !==
+                            races[
+                              `(${selectedDriver.driverId}, ${selectedCircuit.circuitId})`
+                            ][index - 1].constructorName;
+                        return [
+                          didSwitchTeams && (
+                            <ListDivider
+                              key={`divider-${item.raceId}`}
+                            ></ListDivider>
+                          ),
+                          <ListItem key={item.raceId}>
+                            <ListItemDecorator>
+                              {/* render a small circle with a fixed colour */}
+                              <Box
+                                sx={{
+                                  width: "1em",
+                                  height: "1em",
+                                  borderRadius: "1em",
+                                  backgroundColor: item.color,
+                                }}
+                              />
+                            </ListItemDecorator>
+                            <ListItemContent>
+                              <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                paddingRight="1em"
+                              >
+                                <Typography level="body1" textAlign="left">
+                                  {item.year}&nbsp;{item.constructorName}
+                                </Typography>
+                                <Typography level="body2" textAlign="end">
+                                  <Typography level="body3">
+                                    Final Pos.
+                                  </Typography>
+                                  &nbsp;
+                                  {item.position === "\\N"
+                                    ? "DNF"
+                                    : item.position.toString().padStart(2, "0")}
+                                </Typography>
+                              </Box>
+                            </ListItemContent>
+                            <Checkbox
+                              checked={selectedItems.some(
+                                (selectedItem) =>
+                                  selectedItem.raceId === item.raceId
+                              )}
+                              onChange={(event) => {
+                                if (event.target.checked) {
+                                  setSelectedItems((selectedItems) => [
+                                    ...selectedItems,
+                                    item,
+                                  ]);
+                                } else {
+                                  setSelectedItems((selectedItems) =>
+                                    selectedItems.filter(
+                                      (selectedItem) =>
+                                        selectedItem.raceId !== item.raceId
+                                    )
+                                  );
+                                }
+                              }}
+                            />
+                          </ListItem>,
+                        ];
+                      })}
+                  </List>
+                </>
+              )}
+            </Sheet>
           )}
         </Box>
-        <Box sx={{ width: "60%" }}>
-          {selectedDriver && selectedCircuit && items && (
-            <Track
-              driver={selectedDriver}
-              circuit={selectedCircuit}
-              markers={items.map((item) => ({
-                color: item.colour,
-                label: item.year.toString(),
-                id: item.raceId,
-              }))}
-              lapTimes={lapTimes}
-            />
-          )}
+        <Box sx={{ width: "70%" }}>
+          <ErrorBoundary>
+            {selectedDriver &&
+              selectedCircuit &&
+              selectedItems &&
+              isDataLoaded && (
+                <Track
+                  key={`${selectedDriver.driverId}-${
+                    selectedCircuit.circuitId
+                  }-${selectedItems.map((item) => item.raceId).join("-")}`}
+                  driver={selectedDriver}
+                  circuit={selectedCircuit}
+                  markers={selectedItems.map((item) => ({
+                    color: item.color,
+                    label: `${item.year.toString()} ${item.constructorName}`,
+                    id: item.raceId,
+                  }))}
+                  lapTimes={lapTimes}
+                />
+              )}
+          </ErrorBoundary>
         </Box>
       </Box>
     </Box>

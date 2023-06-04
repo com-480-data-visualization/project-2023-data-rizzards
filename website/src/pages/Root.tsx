@@ -40,7 +40,6 @@ const Root: React.FC = () => {
         <Tab value={"driver"}>Driver</Tab>
         <Tab value={"race"}>Race</Tab>
         <Tab value={"season"}>Transport</Tab>
-
       </TabList>
 
       <TabPanel value="home">

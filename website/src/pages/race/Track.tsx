@@ -5,7 +5,6 @@ import { select, transition, easeLinear } from "d3";
 import { Circuit, Driver, LapTimes } from "./data_types";
 import {
   Box,
-  Button,
   List,
   ListItem,
   ListItemContent,
@@ -37,6 +36,70 @@ export const Track: React.FC<TrackProps> = ({
   const dotRefs = useRef(new Map<number, SVGCircleElement | null>());
   const [pathRef, setPathRef] = useState<SVGPathElement | null>(null);
 
+  const totalLaps = Math.max(
+    ...markers.map((marker) => lapTimes[marker.id]?.length ?? 0)
+  );
+
+  // Calculate the scale factor based on the desired total animation duration
+  const scaleFactor = 120000 / 6000;
+
+  const [lapData, setLapData] = useState<
+    Record<number, { elapsedTime: number; currentLap: number }>
+  >(() =>
+    markers.reduce(
+      (acc, { id }) => ({ ...acc, [id]: { elapsedTime: 0, currentLap: 0 } }),
+      {}
+    )
+  );
+
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const animateMarker = (marker: Marker) => {
+    const dot = dotRefs.current.get(marker.id);
+    const currentLap = lapData[marker.id]?.currentLap ?? 0;
+    const lapTime = lapTimes[marker.id]?.[currentLap];
+
+    if (!pathRef || !dot || !lapTime) return;
+
+    const pathLength = pathRef.getTotalLength();
+    const t = transition(`move-marker-${marker.id}`)
+      .duration(lapTime / scaleFactor)
+      .ease(easeLinear);
+
+    select(dot)
+      .transition(t)
+      .attrTween("transform", () => (t: number) => {
+        const point = pathRef.getPointAtLength(t * pathLength);
+        return `translate(${point.x},${point.y})`;
+      })
+      .on("end", () => {
+        setLapData((lapData) => {
+          const updatedLapData = {
+            ...lapData,
+            [marker.id]: {
+              ...lapData[marker.id],
+              elapsedTime: (lapData[marker.id]?.elapsedTime ?? 0) + lapTime,
+              currentLap: (lapData[marker.id]?.currentLap ?? 0) + 1,
+            },
+          };
+
+          // if all drivers have finished last lap, stop the the animation
+          if (
+            Object.values(lapData).every(
+              (lapData) => lapData.currentLap === totalLaps - 1
+            )
+          ) {
+            setIsAnimating(false);
+          }
+
+          return updatedLapData;
+        });
+
+        // if the driver has finished thier lap, animate the next lap
+        animateMarker(marker);
+      });
+  };
+
   // query dom for the path and store it in state
   // also add a circle for each driver
   useEffect(() => {
@@ -47,9 +110,6 @@ export const Track: React.FC<TrackProps> = ({
 
     const svg = trackWrapperRef.current?.querySelector("svg");
     if (svg) {
-      // remove all the dots from the previous animation
-      svg.querySelectorAll("circle").forEach((dot) => dot.remove());
-
       const path = svg.querySelector("path");
       if (!path) return;
 
@@ -73,104 +133,38 @@ export const Track: React.FC<TrackProps> = ({
         svg.appendChild(dot);
         dotRefs.current.set(marker.id, dot);
       });
-    }
-  }, [trackWrapperRef, markers, dotRefs]);
 
-  const totalLaps = Math.max(
-    ...markers.map((marker) => lapTimes[marker.id]?.length ?? 0)
-  );
+      // reset the lap data
+      setLapData(
+        markers.reduce(
+          (acc, { id }) => ({
+            ...acc,
+            [id]: { elapsedTime: 0, currentLap: 0 },
+          }),
+          {}
+        )
+      );
 
-  // number of ms to animate the slowest lap, the other lap times will be scaled to this
-  const singleLapDuration = 4000;
-  // Find the slowest lap time, (in ms)
-  const slowestLapTime = Math.max(
-    ...markers.map((marker) => lapTimes[marker.id]?.[0] ?? 60000)
-  );
-  // Calculate the scale factor based on the desired total animation duration
-  const scaleFactor = slowestLapTime / singleLapDuration;
-
-  const [lapData, setLapData] = useState<
-    Record<number, { elapsedTime: number; currentLap: number }>
-  >(() =>
-    markers.reduce(
-      (acc, { id }) => ({ ...acc, [id]: { elapsedTime: 0, currentLap: 0 } }),
-      {}
-    )
-  );
-
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [pausingAfterLap, setPausingAfterLap] = useState(false);
-
-  const animateMarker = (marker: Marker) => {
-    const dot = dotRefs.current.get(marker.id);
-    const currentLap = lapData[marker.id]?.currentLap ?? 0;
-    const lapTime = lapTimes[marker.id]?.[currentLap];
-
-    if (!pathRef || !dot || !lapTime) return;
-
-    const pathLength = pathRef.getTotalLength();
-    const t = transition()
-      .duration(lapTime / scaleFactor)
-      .ease(easeLinear);
-
-    select(dot)
-      .transition(t)
-      .attrTween("transform", () => (t: number) => {
-        const point = pathRef.getPointAtLength(t * pathLength);
-        return `translate(${point.x},${point.y})`;
-      })
-      .on("end", () => {
-        setLapData((lapData) => ({
-          ...lapData,
-          [marker.id]: {
-            ...lapData[marker.id],
-            elapsedTime: (lapData[marker.id]?.elapsedTime ?? 0) + lapTime,
-            currentLap: (lapData[marker.id]?.currentLap ?? 0) + 1,
-          },
-        }));
-
-        // if all drivers have finished last lap, stop the the animation
-        if (
-          Object.values(lapData).some(
-            (lapData) => lapData.currentLap === totalLaps - 1
-          )
-        ) {
-          setIsAnimating(false);
-        }
-      });
-  };
-
-  // animate the markers when the lap data changes
-  useEffect(() => {
-    if (!isAnimating) return;
-
-    // create set of current laps
-    const currentLaps = new Set(
-      Object.values(lapData).map((lapData) => lapData.currentLap)
-    );
-
-    // if all drivers are on the same lap, start the animation again
-    if (currentLaps.size === 1) {
+      // animate the markers
+      setIsAnimating(true);
       markers.forEach(animateMarker);
     }
-  }, [lapData]);
 
-  // animate the markers when the animation state changes
-  useEffect(() => {
-    if (!isAnimating) return;
-
-    markers.forEach(animateMarker);
-  }, [isAnimating, markers]);
+    return () => {
+      setIsAnimating(false);
+      const svg = trackWrapperRef.current?.querySelector("svg");
+      if (svg) {
+        Array.from(dotRefs.current.entries()).forEach(([id, dot]) => {
+          select(dot).interrupt(`move-marker-${id}`);
+          dot?.remove();
+        });
+      }
+    };
+  }, [circuit, driver, markers]);
 
   return (
-    <Box
-      className="track_wrapper"
-      ref={trackWrapperRef}
-      display="flex"
-      justifyContent="space-evenly"
-      gap={4}
-    >
-      <Box sx={{ width: "30%" }}>
+    <Box ref={trackWrapperRef} display="flex" justifyContent="space-evenly">
+      <Box sx={{ width: "50%" }}>
         <ReactSVG
           src={`https://raw.githubusercontent.com/f1laps/f1-track-vectors/main/f1_2020/${circuit.svg_url_suffix}.svg`}
         />
@@ -183,23 +177,6 @@ export const Track: React.FC<TrackProps> = ({
         sx={{ width: "30%" }}
         gap={4}
       >
-        <Button
-          variant="soft"
-          color="danger"
-          onClick={(event) => {
-            event.preventDefault();
-            if (isAnimating) {
-              setPausingAfterLap(true);
-              setTimeout(() => setPausingAfterLap(false), 3000);
-              setIsAnimating(false);
-            } else {
-              setIsAnimating(true);
-            }
-          }}
-          loading={pausingAfterLap}
-        >
-          {isAnimating ? "Pause" : "Play"}
-        </Button>
         <RaceInfo markers={markers} lapData={lapData} totalLaps={totalLaps} />
       </Box>
     </Box>
@@ -239,8 +216,11 @@ const RaceInfo = (props: {
         </ListItem>
         {Object.entries(lapData)
           .sort((a, b) => a[1].elapsedTime - b[1].elapsedTime)
-          .map(([id, { elapsedTime, currentLap }]) => {
-            const marker = markers.find((marker) => marker.id === +id)!;
+          .flatMap(([id, { elapsedTime, currentLap }]) => {
+            const marker = markers.find((marker) => marker.id === +id);
+
+            if (!marker) return null;
+
             return (
               <ListItem key={id}>
                 <ListItemDecorator>
@@ -259,13 +239,8 @@ const RaceInfo = (props: {
                   </Typography>
                 </ListItemContent>
                 <Typography level="body1">
-                  {new Date(lapData[marker.id]?.elapsedTime ?? 0)
-                    .toISOString()
-                    .slice(11, -5)}{" "}
-                  |{" "}
-                  {(lapData[marker.id]?.currentLap ?? 0)
-                    .toString()
-                    .padStart(3, "0")}
+                  {new Date(elapsedTime ?? 0).toISOString().slice(11, -5)} |{" "}
+                  {(currentLap ?? 0).toString().padStart(3, "0")}
                 </Typography>
               </ListItem>
             );
