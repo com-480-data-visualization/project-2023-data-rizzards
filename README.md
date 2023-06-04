@@ -18,15 +18,6 @@ See [milestone2.md](milestones/milestone2.md)
 
 ## Milestone 3 (4th June, 5pm)
 
-**80% of the final grade**
-
-- Website link
+- [Website link](https://com-480-data-visualization.github.io/project-2023-data-rizzards)
 - [ProcessBook.md](milestones/ProcessBook.md)
 - [Screencast link](https://drive.google.com/drive/folders/1NLZvEjeKUQ2dIe8Sfae6BLNVBbiBvTyG?usp=sharing)
-
--> Add explaination of  the technical setup and intended usage 
-
-## Late policy
-
-- < 24h: 80% of the grade for the milestone
-- < 48h: 70% of the grade for the milestone
