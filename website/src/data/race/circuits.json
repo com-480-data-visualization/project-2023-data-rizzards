@@ -1,0 +1,149 @@
+[
+  {
+    "circuitId": 1,
+    "name": "Albert Park Grand Prix Circuit",
+    "country": "Australia",
+    "location": "Melbourne",
+    "svg_url_suffix": "australia"
+  },
+  {
+    "circuitId": 3,
+    "name": "Bahrain International Circuit",
+    "country": "Bahrain",
+    "location": "Sakhir",
+    "svg_url_suffix": "bahrain"
+  },
+  {
+    "circuitId": 4,
+    "name": "Circuit de Barcelona-Catalunya",
+    "country": "Spain",
+    "location": "Montmel\u00f3",
+    "svg_url_suffix": "spain"
+  },
+  {
+    "circuitId": 6,
+    "name": "Circuit de Monaco",
+    "country": "Monaco",
+    "location": "Monte-Carlo",
+    "svg_url_suffix": "monaco"
+  },
+  {
+    "circuitId": 7,
+    "name": "Circuit Gilles Villeneuve",
+    "country": "Canada",
+    "location": "Montreal",
+    "svg_url_suffix": "canada"
+  },
+  {
+    "circuitId": 9,
+    "name": "Silverstone Circuit",
+    "country": "UK",
+    "location": "Silverstone",
+    "svg_url_suffix": "greatbritain"
+  },
+  {
+    "circuitId": 11,
+    "name": "Hungaroring",
+    "country": "Hungary",
+    "location": "Budapest",
+    "svg_url_suffix": "hungary"
+  },
+  {
+    "circuitId": 13,
+    "name": "Circuit de Spa-Francorchamps",
+    "country": "Belgium",
+    "location": "Spa",
+    "svg_url_suffix": "belgium"
+  },
+  {
+    "circuitId": 14,
+    "name": "Autodromo Nazionale di Monza",
+    "country": "Italy",
+    "location": "Monza",
+    "svg_url_suffix": "italy"
+  },
+  {
+    "circuitId": 15,
+    "name": "Marina Bay Street Circuit",
+    "country": "Singapore",
+    "location": "Marina Bay",
+    "svg_url_suffix": "singapore"
+  },
+  {
+    "circuitId": 17,
+    "name": "Shanghai International Circuit",
+    "country": "China",
+    "location": "Shanghai",
+    "svg_url_suffix": "china"
+  },
+  {
+    "circuitId": 18,
+    "name": "Aut\u00f3dromo Jos\u00e9 Carlos Pace",
+    "country": "Brazil",
+    "location": "S\u00e3o Paulo",
+    "svg_url_suffix": "brazil"
+  },
+  {
+    "circuitId": 22,
+    "name": "Suzuka Circuit",
+    "country": "Japan",
+    "location": "Suzuka",
+    "svg_url_suffix": "japan"
+  },
+  {
+    "circuitId": 24,
+    "name": "Yas Marina Circuit",
+    "country": "UAE",
+    "location": "Abu Dhabi",
+    "svg_url_suffix": "abudhabi"
+  },
+  {
+    "circuitId": 32,
+    "name": "Aut\u00f3dromo Hermanos Rodr\u00edguez",
+    "country": "Mexico",
+    "location": "Mexico City",
+    "svg_url_suffix": "mexico"
+  },
+  {
+    "circuitId": 34,
+    "name": "Circuit Paul Ricard",
+    "country": "France",
+    "location": "Le Castellet",
+    "svg_url_suffix": "france"
+  },
+  {
+    "circuitId": 39,
+    "name": "Circuit Park Zandvoort",
+    "country": "Netherlands",
+    "location": "Zandvoort",
+    "svg_url_suffix": "netherlands"
+  },
+  {
+    "circuitId": 69,
+    "name": "Circuit of the Americas",
+    "country": "USA",
+    "location": "Austin",
+    "svg_url_suffix": "usa"
+  },
+  {
+    "circuitId": 70,
+    "name": "Red Bull Ring",
+    "country": "Austria",
+    "location": "Spielberg",
+    "svg_url_suffix": "austria"
+  },
+  {
+    "circuitId": 71,
+    "name": "Sochi Autodrom",
+    "country": "Russia",
+    "location": "Sochi",
+    "svg_url_suffix": "russia"
+  },
+  {
+    "circuitId": 73,
+    "name": "Baku City Circuit",
+    "country": "Azerbaijan",
+    "location": "Baku",
+    "svg_url_suffix": "azerbaijan"
+  }
+]

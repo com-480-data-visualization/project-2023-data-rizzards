@@ -1,76 +1,276 @@
-import React, { useEffect, useRef, useState } from "react";
-import { svgPathProperties } from "svg-path-properties";
-import { Item } from "../../components/Item";
+import { useEffect, useRef, useState } from "react";
+import { ReactSVG } from "react-svg";
+import { select, transition, easeLinear } from "d3";
 
-export interface TrackProps {
-  items: Array<{ name: string; colour: string }>;
+import { Circuit, Driver, LapTimes } from "./data_types";
+import {
+  Box,
+  Button,
+  List,
+  ListItem,
+  ListItemContent,
+  ListItemDecorator,
+  Sheet,
+  Typography,
+} from "@mui/joy";
+
+interface Marker {
+  id: number;
+  color: string;
+  label: string;
 }
 
-export const Track = (props: TrackProps) => {
-  const [progress, setProgress] = useState(0);
-  const pathRef = useRef<SVGPathElement>(null);
-  const dotRef = useRef<SVGCircleElement>(null);
-  const lapTime = 10000; // 10 seconds in milliseconds
+interface TrackProps {
+  driver: Driver;
+  circuit: Circuit;
+  markers: Marker[];
+  lapTimes: LapTimes;
+}
 
+export const Track: React.FC<TrackProps> = ({
+  markers,
+  driver,
+  circuit,
+  lapTimes,
+}) => {
+  const trackWrapperRef = useRef<HTMLDivElement>(null);
+  const dotRefs = useRef(new Map<number, SVGCircleElement | null>());
+  const [pathRef, setPathRef] = useState<SVGPathElement | null>(null);
+
+  // query dom for the path and store it in state
+  // also add a circle for each driver
   useEffect(() => {
-    if (pathRef.current && dotRef.current) {
-      const pathProperties = new svgPathProperties(
-        pathRef.current.getAttribute("d") || ""
-      );
-      const pathLength = pathProperties.getTotalLength();
+    const path = trackWrapperRef.current?.querySelector("path");
+    if (path) {
+      setPathRef(path);
+    }
 
-      const updateDotPosition = () => {
-        const { x, y } = pathProperties.getPropertiesAtLength(
-          progress * pathLength
+    const svg = trackWrapperRef.current?.querySelector("svg");
+    if (svg) {
+      // remove all the dots from the previous animation
+      svg.querySelectorAll("circle").forEach((dot) => dot.remove());
+
+      const path = svg.querySelector("path");
+      if (!path) return;
+
+      // Add a circle for each driver.
+      markers.forEach((marker) => {
+        const dot = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "circle"
         );
-        if (dotRef.current) {
-          dotRef.current.setAttribute("cx", x.toString());
-          dotRef.current.setAttribute("cy", y.toString());
+        dot.setAttribute("r", "20");
+        dot.setAttribute("fill", marker.color);
+
+        // Get the start point of the path.
+        const pathStart = path.getPointAtLength(0);
+        // Set the initial position of the dot to the start of the path using transform
+        dot.setAttribute(
+          "transform",
+          `translate(${pathStart.x},${pathStart.y})`
+        );
+
+        svg.appendChild(dot);
+        dotRefs.current.set(marker.id, dot);
+      });
+    }
+  }, [trackWrapperRef, markers, dotRefs]);
+
+  const totalLaps = Math.max(
+    ...markers.map((marker) => lapTimes[marker.id]?.length ?? 0)
+  );
+
+  // number of ms to animate the slowest lap, the other lap times will be scaled to this
+  const singleLapDuration = 4000;
+  // Find the slowest lap time, (in ms)
+  const slowestLapTime = Math.max(
+    ...markers.map((marker) => lapTimes[marker.id]?.[0] ?? 60000)
+  );
+  // Calculate the scale factor based on the desired total animation duration
+  const scaleFactor = slowestLapTime / singleLapDuration;
+
+  const [lapData, setLapData] = useState<
+    Record<number, { elapsedTime: number; currentLap: number }>
+  >(() =>
+    markers.reduce(
+      (acc, { id }) => ({ ...acc, [id]: { elapsedTime: 0, currentLap: 0 } }),
+      {}
+    )
+  );
+
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [pausingAfterLap, setPausingAfterLap] = useState(false);
+
+  const animateMarker = (marker: Marker) => {
+    const dot = dotRefs.current.get(marker.id);
+    const currentLap = lapData[marker.id]?.currentLap ?? 0;
+    const lapTime = lapTimes[marker.id]?.[currentLap];
+
+    if (!pathRef || !dot || !lapTime) return;
+
+    const pathLength = pathRef.getTotalLength();
+    const t = transition()
+      .duration(lapTime / scaleFactor)
+      .ease(easeLinear);
+
+    select(dot)
+      .transition(t)
+      .attrTween("transform", () => (t: number) => {
+        const point = pathRef.getPointAtLength(t * pathLength);
+        return `translate(${point.x},${point.y})`;
+      })
+      .on("end", () => {
+        setLapData((lapData) => ({
+          ...lapData,
+          [marker.id]: {
+            ...lapData[marker.id],
+            elapsedTime: (lapData[marker.id]?.elapsedTime ?? 0) + lapTime,
+            currentLap: (lapData[marker.id]?.currentLap ?? 0) + 1,
+          },
+        }));
+
+        // if all drivers have finished last lap, stop the the animation
+        if (
+          Object.values(lapData).some(
+            (lapData) => lapData.currentLap === totalLaps - 1
+          )
+        ) {
+          setIsAnimating(false);
         }
-      };
+      });
+  };
 
-      updateDotPosition();
-
-      const interval = setInterval(() => {
-        setProgress((prevProgress) => {
-          const nextProgress = prevProgress + 1 / lapTime;
-          if (nextProgress >= 1) {
-            return 0;
-          }
-          return nextProgress;
-        });
-      }, 1);
-
-      return () => clearInterval(interval);
-    }
-  }, [progress, lapTime]);
-
+  // animate the markers when the lap data changes
   useEffect(() => {
-    if (progress > 0 && pathRef.current && dotRef.current) {
-      const pathProperties = new svgPathProperties(
-        pathRef.current.getAttribute("d") || ""
-      );
-      const pathLength = pathProperties.getTotalLength();
-      const { x, y } = pathProperties.getPropertiesAtLength(
-        progress * pathLength
-      );
-      dotRef.current.setAttribute("cx", x.toString());
-      dotRef.current.setAttribute("cy", y.toString());
+    if (!isAnimating) return;
+
+    // create set of current laps
+    const currentLaps = new Set(
+      Object.values(lapData).map((lapData) => lapData.currentLap)
+    );
+
+    // if all drivers are on the same lap, start the animation again
+    if (currentLaps.size === 1) {
+      markers.forEach(animateMarker);
     }
-  }, [progress]);
+  }, [lapData]);
+
+  // animate the markers when the animation state changes
+  useEffect(() => {
+    if (!isAnimating) return;
+
+    markers.forEach(animateMarker);
+  }, [isAnimating, markers]);
 
   return (
-    <Item>
-      <svg viewBox="0 0 800 400" width="600">
-        <path
-          ref={pathRef}
-          // Replace with your track's SVG path
-          d="M21.6,617.3c6.8-135,11.8-270.3,17.4-405.4c1.7-41.7,3.7-83.8,5-125.4  C46,65,43.4,42.6,49,21.6c3.7-12.8,18.5-17.2,29.1-9.1c9.2,9.2,17,20.3,27.4,28.2c13.9,9.4,31.8,13.6,48.2,9.1  c16.1-2.3,31.5-10,47.4-14.1c32.8-7.6,66.2,0.8,98.9,5.8c83.6,16.7,167.7,32.1,251.7,47.4c26.7,5.2,53.8,10.3,80.6,15  c37,5.2,58.9,21.1,41.5,60.6c-7.5,19.1-27.4,28-43.2,39c-17,9.4-32,22.8-45.7,36.6c-14.8,16.4-31.3,32.7-41.5,52.3  c-12.1,18.3-19.9,40.3-39,52.3c-43.9,29.4-71.8-8.7-123.8,24.9c-19.8,13.6-34.6,32.7-47.4,52.3c-13.6,20.1-44.7,92.3-73.9,76.4  c-23.6-15.1-12.7-46.1-8.3-68.1c6.2-26.6,13.9-53.1,17.4-79.8c8.1-49.4,25.8-100.9,10-149.5c-8.1-21.1-30.5-57.1-56.5-45.7  c-11.1,11-10.1,28.5-12.5,42.4c-8.3,62.6-11.9,125.7-14.1,188.6c-3.1,77.7-5.5,155.5-10,232.6c-1.8,20.8-2.3,42-3.3,62.3  c-2.3,21.5-1.9,46.9,15.8,61.5c34.4,27.1,85.6,10.2,111.3-20.8c30.1-37.5,32.3-92.2,70.6-123c42.7-39,103.2-33.7,151.2-9.1  c25,12,53.3,23.3,69,46.6c16,23.6,10.1,53.8-10.9,71.4c-21.2,16.5-46.8,25.5-69,39c-54.7,29.8-108.8,60.4-162.8,89.7  c-68.1,38.2-136.2,76.1-203.5,113.8c-18.5,9.5-35.9,20.2-53.2,29.9c-15.6,8.8-31.9,19.3-49.8,14.9c-59.3-18.6-39.3-119.6-39.8-167  C14.5,757.4,15.3,687.5,21.6,617.3z"
-          fill="none"
-          stroke="black"
+    <Box
+      className="track_wrapper"
+      ref={trackWrapperRef}
+      display="flex"
+      justifyContent="space-evenly"
+      gap={4}
+    >
+      <Box sx={{ width: "30%" }}>
+        <ReactSVG
+          src={`https://raw.githubusercontent.com/f1laps/f1-track-vectors/main/f1_2020/${circuit.svg_url_suffix}.svg`}
         />
-        <circle ref={dotRef} r="5" fill="red" />
-      </svg>
-    </Item>
+      </Box>
+
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        sx={{ width: "30%" }}
+        gap={4}
+      >
+        <Button
+          variant="soft"
+          color="danger"
+          onClick={(event) => {
+            event.preventDefault();
+            if (isAnimating) {
+              setPausingAfterLap(true);
+              setTimeout(() => setPausingAfterLap(false), 3000);
+              setIsAnimating(false);
+            } else {
+              setIsAnimating(true);
+            }
+          }}
+          loading={pausingAfterLap}
+        >
+          {isAnimating ? "Pause" : "Play"}
+        </Button>
+        <RaceInfo markers={markers} lapData={lapData} totalLaps={totalLaps} />
+      </Box>
+    </Box>
+  );
+};
+
+const RaceInfo = (props: {
+  markers: Marker[];
+  lapData: Record<number, { elapsedTime: number; currentLap: number }>;
+  totalLaps: number;
+}) => {
+  const { markers, lapData, totalLaps } = props;
+
+  return (
+    <Sheet variant="soft" sx={{ padding: "1em", borderRadius: "1em" }}>
+      <Typography
+        level="body1"
+        textTransform="uppercase"
+        fontWeight="lg"
+        textAlign="center"
+      >
+        {`Lap ${
+          Math.max(...Object.values(lapData).map((lap) => lap.currentLap), 0) +
+          1
+        } of ${totalLaps}`}
+      </Typography>
+      <List sx={{ padding: "5%" }}>
+        <ListItem key={"header"}>
+          <ListItemContent>
+            <Typography level="body1" fontWeight="bold">
+              Season
+            </Typography>
+          </ListItemContent>
+          <Typography level="body1" textAlign="end">
+            <b>Elapsed </b> Time | Lap
+          </Typography>
+        </ListItem>
+        {Object.entries(lapData)
+          .sort((a, b) => a[1].elapsedTime - b[1].elapsedTime)
+          .map(([id, { elapsedTime, currentLap }]) => {
+            const marker = markers.find((marker) => marker.id === +id)!;
+            return (
+              <ListItem key={id}>
+                <ListItemDecorator>
+                  <Box
+                    sx={{
+                      width: "1em",
+                      height: "1em",
+                      borderRadius: "1em",
+                      backgroundColor: marker.color,
+                    }}
+                  />
+                </ListItemDecorator>
+                <ListItemContent>
+                  <Typography level="body1" fontWeight="bold">
+                    {marker.label}
+                  </Typography>
+                </ListItemContent>
+                <Typography level="body1">
+                  {new Date(lapData[marker.id]?.elapsedTime ?? 0)
+                    .toISOString()
+                    .slice(11, -5)}{" "}
+                  |{" "}
+                  {(lapData[marker.id]?.currentLap ?? 0)
+                    .toString()
+                    .padStart(3, "0")}
+                </Typography>
+              </ListItem>
+            );
+          })}
+      </List>
+    </Sheet>
   );
 };

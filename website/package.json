@@ -31,6 +31,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
+    "react-svg": "^16.1.15",
     "styled-components": "^5.3.11",
     "svg-path-properties": "^1.1.0",
     "topojson-client": "^3.1.0",
