@@ -50,17 +50,17 @@ The second shows, for a selected year, the cumulated points over the season. The
 ![cumulative points visualisation](./images/drivers_points.png)
 
 
-Race
+- Race
 This page will focus on an animated visualization of the race. The user will be able to select a track and a driver and see their performance over different seasons/years.
 Motivation:
 The user can compare the performance of their favorite driver on the same track over different seasons.
 F1 does a complete re-design of the cars every 6-7 years. We can visualize how the performance of a driver changed after the redesign.
 If a driver changed teams, we can compare their performance while driving cars from different teams
 
-Transport
+- Transport
 For this visualisation, the main idea is to show the different locations of the circuits during the year. This will be shown via an animation on a map showing the position/country of each circuit with a travel animation between the countries in the order that the season is going.
 
-It will then be possible to see also the number of kilometres travelled during the season. This number is dynamically increased as the travel animations are going. It will also be possible to pause/resume the animation.
+It will then be possible to see also the number of kilometres travelled during the season. This number is dynamically increased as the travel animations are going.
 
 To make it work for every season the user will choose the season wanted.
 
