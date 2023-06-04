@@ -66,7 +66,62 @@ To make it work for every season the user will choose the season wanted.
 
 #### Creating the website
 
-TODO: description of the actual visualizations
+##### Season sketch (Ambroise)
+
+###### Basic sketch in the website
+For this sketch, as we had the idea of what we wanted to, we first found an example of the road-map from an example linked on the d3.js library main page. Once this was done we also had to redo the path drawing between countries that was not included in the github example.
+
+###### Data processing
+As I was more experienced with MySQL and python than other tools I chose to use this to format my data.
+The first thing I did was to import in mySQL 3 files the : the races, the circuits, and also the json file world-country-names.json that contained an id/name relation that is working with the TopoJSON data that is used in the sketch. To import the data it was quite easy as there is an import wizard in MySQL workbench
+Once everything imported in MySQL to things needs to be done :
+1) Join all the data together
+2) Correct manually the data that are not linked correctly
+3) Export the data as a json file
+4) Modify the format of the new json
+5) Import the data in the project
+
+**1**
+For the first point, I used a mySQL, which gave me the list of the circuit sorted with all the data needed : This data also contains the id in the world-country-names.json which will be helpful after it to make the connection with the map on the website. 
+
+**2**
+After this I noticed as I’m linking the world-country-names.json on the name that some lines have the “id” field to null. After some research it seems that it was because the display name that is in world-country-names.json is not the same as the country name in the F1 data. So I changed the names of the countries in the world-country-names.json to make it match with the names of the F1 data. And re-import the modified world-country-names.json into MySQL.
+ow that everything is fixed we can export the data. 
+
+**3**
+This is trivial as MySQL has a feature for that.
+
+**4**
+Now to make the access easier during the project I chose to modify the format of the new json exported from MySQL (that is just a list of dict).
+The format I chose was to group the races by the year.
+To do it I used Python with the built-in json modules.
+
+**5**
+I needed to create an interface and type the data in typescript and then I imported them and the project.
+
+
+###### Using the data in the project and selection menu
+With the modified example sketch, the world tour was just going through all the countries. So I modified it the following way in order that it only goes through the countries that have the id contained in the processed json file explained above.
+Then I created a field to fill with the season year (which is a Autocomplete component from material UI) and linked it to a react state (used in the map/GlobePlot component) to make everything interact together.
+
+###### Countries that doesn’t exist in the map
+During the test phase of the project I discovered that the small countries (like Monaco) were not being drawn and so that it is not possible to travel to them.
+To avoid this problem I did 2 things :
+I changed the json file with all the races in order that the idea of those small countries point to the nearest country that is drawn on the map
+I added an attribute that if this country cannot be shown in the map (because it is too small) we do not draw it in red (otherwise with (1) we would draw France in red when we traveled to Monaco).
+
+###### Counter
+For the counter I used a library called countup.js and used the help of chatGTP to convert it as a React component.
+Then I created a state in the GlobePlot (which contains the map) file that will be filled with the total number of kilometers.
+To calculate the number of kilometers between 2 points I found a great example online that worked great (I still did some tests on google maps that showed that the distances were the same).
+
+###### Issues with the start / pause button
+Compared to the base sketch I did not manage to find a way to integrate this pause in the project. As the animation is quite complicated we use a “tween” function. This function takes values between 0 and 1 and draws the sketch at the correct state of the animation.
+I tried to make some changes on this function to make a pause phase and managed to pause the animation but there was some strange behavior when the animation was resumed. This is because when you pause the animation it does not really do it in the background (only freezes the animation) and this causes problems when un-pausing the world tour.
+Layout
+At the end I just changed the layout in order that some things are centered and some others not. For that I used some CSS.
+
+
 
 
 ### Challenges
