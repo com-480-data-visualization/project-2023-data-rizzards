@@ -8,6 +8,8 @@
     "@emotion/styled": "^11.10.6",
     "@fontsource/public-sans": "^4.5.12",
     "@mui/joy": "^5.0.0-alpha.77",
+    "@mui/material": "^5.0.0",
+    "@mui/icons-material": "^5.11.16",
     "@nivo/bump": "^0.82.1",
     "@nivo/core": "^0.82.1",
     "@testing-library/jest-dom": "^5.16.5",

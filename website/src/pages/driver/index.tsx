@@ -2,7 +2,9 @@ import React from "react";
 import {useState} from "react";
 import Box from "@mui/joy/Box";
 import Button from '@mui/joy/Button';
-import {Checkbox, FormLabel, ListItemContent, ListItemDecorator} from "@mui/joy";
+import {FormLabel, ListItemContent, ListItemDecorator} from "@mui/joy";
+import { IconButton } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
 import Autocomplete from "@mui/joy/Autocomplete";
 import {Typography} from "@mui/joy";
 import List from "@mui/joy/List";
@@ -55,7 +57,7 @@ const Driver: React.FC = () => {
         console.log('The drivers selected are now: ', selectedDrivers);
     };
 
-    function handleClickCheckbox(driver: string) {
+    function handleClickClearButton(driver: string) {
         console.log('The Checkbox of ', driver, ' was clicked.');
         if (selectedDrivers.length === 0) {
             console.log('Cannot remove the last driver.');
@@ -86,11 +88,14 @@ const Driver: React.FC = () => {
                         <ListItemContent>
                             <Typography level="body1">{driver}</Typography>
                         </ListItemContent>
-                        <Checkbox
-                            color='danger'
-                            defaultChecked
-                            onClick={() => handleClickCheckbox(driver)}
-                        />
+                        <IconButton
+                            component="button"
+                            size="small"
+                            color="error"
+                            onClick={() => handleClickClearButton(driver)}
+                        >
+                            <ClearIcon />
+                        </IconButton>
                     </ListItem>
                     <Button
                         variant="outlined"
