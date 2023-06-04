@@ -82,7 +82,12 @@ Once everything imported in MySQL to things needs to be done :
 5) Import the data in the project
 
 **1**
-For the first point, I used a mySQL, which gave me the list of the circuit sorted with all the data needed : This data also contains the id in the world-country-names.json which will be helpful after it to make the connection with the map on the website. 
+For the first point, I used a mySQL, which gave me the list of the circuit sorted with all the data needed : 
+
+![mysql data process](./images/mysql_race_data_process.png)
+
+
+This data also contains the id in the world-country-names.json which will be helpful after it to make the connection with the map on the website. 
 
 **2**
 After this I noticed as I’m linking the world-country-names.json on the name that some lines have the “id” field to null. After some research it seems that it was because the display name that is in world-country-names.json is not the same as the country name in the F1 data. So I changed the names of the countries in the world-country-names.json to make it match with the names of the F1 data. And re-import the modified world-country-names.json into MySQL.
@@ -120,8 +125,6 @@ Compared to the base sketch I did not manage to find a way to integrate this pau
 I tried to make some changes on this function to make a pause phase and managed to pause the animation but there was some strange behavior when the animation was resumed. This is because when you pause the animation it does not really do it in the background (only freezes the animation) and this causes problems when un-pausing the world tour.
 Layout
 At the end I just changed the layout in order that some things are centered and some others not. For that I used some CSS.
-
-
 
 
 ### Challenges
