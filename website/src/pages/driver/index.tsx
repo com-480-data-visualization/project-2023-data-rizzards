@@ -128,6 +128,8 @@ const Driver: React.FC = () => {
               "inputs inputs"
               "list plot"
               "list plot2"`}
+            gap="4em"
+            sx={{ padding: "2em" }}
 
         >
             <Box gridArea="para" padding="2em">
@@ -240,11 +242,17 @@ export default Driver;
 const PageExplanation = (
     <>
         <Typography level="h2" sx={{textAlign: "center"}}>
-            Overview of the drivers' seasons
+            Overview of the drivers' performance
         </Typography>
         <br/>
-        <Typography level="body1">
+        <Typography
+            level="body1"
+            fontSize="xl"
+        >
 
+            A driver's career is not an easy straight line to the goal : being the winner of the races.
+            From the start to the finishing line, their performances can change throughout the seasons or years.
+            <br/>
             Here you can explore the performance evolution of various drivers over time.
             Gain insights into their rankings across different years or track their cumulative points throughout a selected year.
 
@@ -257,16 +265,23 @@ const PageExplanation = (
 
 const Plot1Explanation = (
     <>
-        <Typography level="body1">
-            Here is the evolution of rankings during the years for the selected drivers.
+        <Typography
+            level="body1"
+            fontSize="xl"
+        >
+            This visualization illustrates the evolution of rankings during the years for the selected drivers.
+            You can observe their progress and performance in different seasons.
         </Typography>
     </>
 );
 
 const Plot2Explanation = (
     <>
-        <Typography level="body1">
-            Here is the evolution of cumulative points during a year for the selected drivers.
+        <Typography
+            level="body1"
+            fontSize="xl"
+        >
+            This visualization showcases the evolution of cumulative points during a year for the selected drivers.
             You can visualize how they performed against others during a season.
         </Typography>
     </>
