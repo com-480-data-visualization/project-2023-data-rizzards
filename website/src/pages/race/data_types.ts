@@ -37,7 +37,8 @@ export type Races = { [key: string]: Race[] };
 export interface Result {
   raceId: number;
   driverId: number;
-  constructorId: number;
+  constructorName: string;
+  color: string;
   position: string;
   points: number;
   year: number;
