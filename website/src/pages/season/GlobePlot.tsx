@@ -300,15 +300,19 @@ const GlobePlot: React.FC<CurrentSeason> = ({selectedS}) => {
         textAlign: 'center'
     };
 
+    const centerItems: React.CSSProperties = {
+        textAlign: "center"
+    }
+
     return (
 
         <div>
             <div ref={globeRef}>
-                <Title ref={titleRef}></Title>
+                <h2 style={centerItems} ref={titleRef}></h2>
             </div>
 
             <div style={countupStyle}>
-                <CountUpComponent km={currentKmNb}></CountUpComponent> KM
+                <b><CountUpComponent km={currentKmNb}></CountUpComponent></b> km
             </div>
 
 
